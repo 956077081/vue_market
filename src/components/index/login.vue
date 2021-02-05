@@ -9,7 +9,7 @@
     >
       <Col span="25">
         <Card shadow style="width: 400px;background-color: rgba(0, 0, 0,0.1);">
-          <p slot="title">新正丰营销管理系统</p>
+          <p slot="title">{{STATIC_CONFIG.company}}</p>
           <Form>
             <FormItem label="" label-position="top">
               <Input type="text" placeholder="请输入账号" size="large" v-model="username"></Input>
@@ -33,7 +33,9 @@
 </template>
 
 <script>
-  import {setCookie,getCookie } from "../../assets/js/auth";
+  import {setCookie, getCookie} from "../../assets/js/auth";
+  import {STATIC_CONFIG} from "../../assets/js/config";
+
   export default {
     name: "login",
     data() {
@@ -56,29 +58,29 @@
           }
         ];
         if (validateParam.some(item => {
-              if (this.$data[item.name] == "") {
-                this.errorMsg = "您还没有输入" + item.label
-                return true;
-              } else {
-                return false;
-              }
-            })
+          if (this.$data[item.name] == "") {
+            this.errorMsg = "您还没有输入" + item.label
+            return true;
+          } else {
+            return false;
+          }
+        })
         ) {
           this.error = true;
           return;
         }
-        let reqParam={//过滤空格
+        let reqParam = {//过滤空格
           username: this.username,
           password: this.password,
         }
         //发送登陆请求
-        this.$store.dispatch('Login',reqParam).then(res=>{
-          setCookie('username',this.username,15);//cookie存储15天
-          setCookie('password',this.password,15);//cookie存储15天
-        }).catch(err=>{
-          this.error=true;
+        this.$store.dispatch('Login', reqParam).then(res => {
+          setCookie('username', this.username, 15);//cookie存储15天
+          setCookie('password', this.password, 15);//cookie存储15天
+        }).catch(err => {
+          this.error = true;
           console.log(err);
-          this.errorMsg ="登陆异常";
+          this.errorMsg = "登陆异常";
         })
 
       }
