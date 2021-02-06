@@ -83,8 +83,7 @@
 </template>
 
 <script>
-  import RequireElement from "../common/requireElement";
-
+import RequireElement from "../../components/common/requireElement";
   export default {
     name: "custDetails",
     components: {RequireElement},

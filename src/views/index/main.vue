@@ -70,7 +70,7 @@
           </Menu>
         </Sider>
         <Content>
-          <component :is="this.curContain" @updatePage="updatePage"></component>
+          <contain></contain>
         </Content>
       </Layout>
     </Layout>
@@ -81,8 +81,10 @@
   import {STATIC_CONFIG} from "../../assets/js/config";
   import custManager from "../cust/custManager";
   import custDetails from "../cust/custDetails";
+  import Contain from "./contain";
   export default {
     components:{
+      Contain,
       custManager,custDetails
     },
     name: "mainContent",
@@ -95,6 +97,7 @@
     },
     methods:{
       menuSelect:function(name) {
+        this.$router.push("/cust");
         this.curContain =name;
       },
       updatePage(page){
