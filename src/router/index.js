@@ -1,22 +1,77 @@
 import main from "../views/index/main";
 import login from "../views/index/login";
-const routers= [
-    {
-      path: '/',
-      name: 'login',
-      component: login,
-
-    },
+import custDetails from "../views/cust/custDetails";
+import custManager from "../views/cust/custManager";
+import marketManager from "../views/market/marketManager";
+import markeDetails from "../views/market/markeDetails";
+import claimMess from "../views/head/claimMess";
+import dataAnaly from "../views/head/dataAnaly";
+const routers = [
   {
-    path: '/11',
+    path: '/login',
+    name: 'login',
+    component: login,
+
+  },
+  {
+    path: '/',
     name: 'admin',
     component: main,
+    redirect: '/claimMess',
     children: [{
-      path: 'cust',
-      name: 'cust',
-      component: () => import('@/views/cust/custManager'),
+      path: '/claimMess',
+      name: 'claimMess',
+      component: () => import('@/views/head/claimMess'),
     }]
+  },
+  {
+    path: '/cust',
+    name: 'cust',
+    component: main,
+    redirect: '/cust/custmanager',
+    children: [
+      {
+        path: 'custmanager',
+        name: 'custmanager',
+        component: custManager
+      },{
+        path: 'custDetails',
+        name: 'custDetails',
+        component: custDetails
+      }
+    ]
+  },
+  {
+    path: '/market',
+    name: 'market',
+    component: main,
+    redirect: '/market/marketManager',
+    children: [
+      {
+        path: 'marketManager',
+        name: 'marketManager',
+        component: marketManager
+      },
+      {
+        path: 'marketDetails',
+        name: 'marketDetails',
+        component: markeDetails
+      }
+    ]
+  },
+  {
+    path: '/head',
+    name: 'head',
+    component: main,
+    children: [
+      {
+       path: 'dataAnaly',
+        name: 'dataAnaly',
+        component: dataAnaly
+      }
+    ]
   }
-  ]
+
+]
 export default routers;
 

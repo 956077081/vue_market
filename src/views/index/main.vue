@@ -11,10 +11,13 @@
   .ivu-layout-header .ivu-menu{
     background-color: black;
   }
+.ivu-layout-sider-children{
+  background: #2b343d;
+}
 </style>
 <template>
-  <div class="layout">
-    <Layout>
+  <div class="layout"   >
+    <Layout >
       <Header >
         <Menu mode="horizontal" theme="dark" active-name="1" >
             <MenuItem name="company" >
@@ -31,17 +34,17 @@
           </div>
         </Menu>
       </Header>
-      <Layout>
-        <Sider  style="background: #ffffff; overflow-x: hidden">
-          <Menu active-name="2-1" theme="light" width="auto" :open-names="['2']"   @on-select="menuSelect">
+      <Layout >
+        <Sider  style=" overflow-x: hidden;">
+          <Menu active-name="2-1" theme="dark" width="auto" :open-names="['2']"   @on-select="menuSelect">
             <Submenu name="1">
-              <template slot="title">
+              <template slot="title" >
                 首页
               </template>
-              <MenuItem name="1-1">
+              <MenuItem name="1-1" :to="'/'">
                 消息提醒
               </MenuItem>
-              <MenuItem name="1-2">
+              <MenuItem name="1-2" :to="'/head/dataAnaly'">
                 数据分析
               </MenuItem>
             </Submenu>
@@ -49,7 +52,7 @@
               <template slot="title">
                 客户管理
               </template>
-              <MenuItem name="custManager"  >
+              <MenuItem name="custManager" :to="'/cust'"  >
                 客户管理查询
               </MenuItem>
             </Submenu>
@@ -57,7 +60,7 @@
               <template slot="title">
                 营销管理
               </template>
-              <MenuItem name="3-1">
+              <MenuItem name="3-1" :to="'/market'">
                 营销查询管理
               </MenuItem>
             </Submenu>
@@ -69,7 +72,7 @@
             </MenuItem>
           </Menu>
         </Sider>
-        <Content>
+        <Content style="height: auto">
           <contain></contain>
         </Content>
       </Layout>
@@ -92,16 +95,13 @@
       return{
         company: STATIC_CONFIG.company,
         userlog: require("../../assets/pic/user.png"),
-        curContain: ''
+        curContain: '',
       }
     },
     methods:{
       menuSelect:function(name) {
-        this.$router.push("/cust");
-        this.curContain =name;
-      },
-      updatePage(page){
-        this.curContain =page;
+        // // this.$router.push("/cust");
+        // this.curContain =name;
       }
     },
 

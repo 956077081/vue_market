@@ -23,7 +23,7 @@
     components: {CustList, CustSearch},
     methods:{
       update(){
-        this.$emit('updatePage','custDetails')
+        // this.$emit('updatePage','custDetails')
       }
     }
   }

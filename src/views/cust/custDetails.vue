@@ -4,7 +4,7 @@
 <template>
   <div>
     <div class="page_main_title">{{getTitleName}}</div>
-    <div class="page_main" style="margin-right: 50px;position: relative">
+    <div class="page_main" style="margin-right: 50px;position: relative;height: 750px;overflow-x: hidden">
       <Form :label-width="200">
         <Row>
           <Col span="12">
