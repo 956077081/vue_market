@@ -1,6 +1,6 @@
 <template>
   <div class="cust_details">
-    <Table height="600" :columns="columns1" :data="data2" ></Table>  </div>
+    <Table  :columns="columns1" :data="data2" ></Table>  </div>
 </template>
 
 <script>
@@ -10,15 +10,19 @@
       return {
         columns1: [
           {
-            title: '公司名称',
+            title: '客户名称',
             key: 'name'
           },
           {
-            title: '组织机构代码',
+            title: '客户类型',
+            key: 'name'
+          },
+          {
+            title: '证件类型',
             key: 'age'
           },
           {
-            title: '法定代表人',
+            title: '证件号码',
             key: 'address'
           },
           {
@@ -28,6 +32,10 @@
           {
             title: '注册资本',
             key: 'address'
+          },
+          {
+            title: '客户创建时间',
+            key: 'updateTime'
           },
           {
             title: '注册时间',

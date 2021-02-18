@@ -6,12 +6,15 @@ import marketManager from "../views/market/marketManager";
 import markeDetails from "../views/market/markeDetails";
 import claimMess from "../views/head/claimMess";
 import dataAnaly from "../views/head/dataAnaly";
+import Vue from "vue";
+import VueRouter from "vue-router";
+Vue.use(VueRouter)
+
 const routers = [
   {
     path: '/login',
     name: 'login',
     component: login,
-
   },
   {
     path: '/',
@@ -73,5 +76,9 @@ const routers = [
   }
 
 ]
-export default routers;
+
+const Router = new VueRouter({
+  routes: routers
+})
+export default Router;
 

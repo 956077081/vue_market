@@ -8,7 +8,7 @@
 <template>
     <div>
       <market-search></market-search>
-      <market-list></market-list>
+      <market-list style="max-height: 600px"></market-list>
       <Page class="head_page"  :total="40" size="small" show-elevator show-sizer />
     </div>
 </template>

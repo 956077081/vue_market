@@ -3,17 +3,27 @@ import axios from "axios";
 import store from "../../store";
 import {getToken} from "./auth";
 import Qs from 'qs'
+import {Message} from "view-design";
+// 创建axios实例
+const service = axios.create({
+  baseURL: STATIC_CONFIG.server, // api的base_url
+  timeout: 15000 // 请求超时时间
+})
 
-axios.defaults.timeout = 60000;//#超时等待时间
 // axios 响应拦截
-axios.interceptors.response.use(res => {
-  return Promise.resolve();
+service.interceptors.response.use(resp => {
+  const  res= resp.data;
+  if(res.code != 200){
+    Message.info(res);
+    return Promise.reject('error');
+  }
+  return Promise.resolve(resp.data);
 }, error => {
   console.log("请求失败！")
   return Promise.reject(error);
 })
 // axios 请求拦截器
-axios.interceptors.request.use(config => {
+service.interceptors.request.use(config => {
   if (store.getters.token) {
     config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
   }
@@ -34,13 +44,6 @@ Promise.prototype.finally = function (callback) {
     })
   })
 }
-// 创建axios实例
-const service = axios.create({
-  baseURL: STATIC_CONFIG.server, // api的base_url
-  timeout: 15000 // 请求超时时间
-})
-
-
 const post = function (url, param = {}, files) {
   return new Promise(((resolve, reject) => {
     let headers = {'Content-Type': 'application/json;charset=UTF-8'};
@@ -58,7 +61,7 @@ const post = function (url, param = {}, files) {
       url: url,
       data: param,
     }).then(res => {
-      resolve(res.data);//成功失败！
+      resolve(res);//成功失败！
     }).catch(err => {
       reject(err);//失败！
     })

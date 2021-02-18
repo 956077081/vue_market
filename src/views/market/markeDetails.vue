@@ -79,11 +79,11 @@
             </FormItem>
           </Col>
         </Row>
+
         <Row>
           <Col style="text-align: center;margin-top: 30px">
             <Button size="large" style="background-color:#b6b7ba ">保存</Button>
             <Button size="large" style="margin-left: 30px;background-color:#b6b7ba">返回</Button>
-
           </Col>
         </Row>
       </Form>
@@ -94,10 +94,11 @@
 
 <script>
   import RequireElement from "../../components/common/requireElement";
+  import MarketList from "./marketList";
 
   export default {
     name: "marketDetails",
-    components: {RequireElement},
+    components: {RequireElement,MarketList},
     data() {
       return {
         operate: 'insert',

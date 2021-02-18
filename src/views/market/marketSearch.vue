@@ -44,15 +44,9 @@
         </Col>
       </Row>
       <Row style="padding-top: 20px">
-        <div style="margin-left: 30px">
-          <Col span="1">
-            <Button>查询</Button>
-          </Col>
-          <Col span="1" style="margin-left: 30px">
-            <Button  @click="update">开通服务</Button>
-          </Col>
-          <Col span="1" style="margin-left: 30px">
-            <Button  @click="">续费</Button>
+        <div >
+          <Col span="2"  style="display: flex;">
+            <Button >查询</Button>&nbsp;&nbsp; <Button  @click="update">创建合同</Button>&nbsp;&nbsp;<Button  @click="">创建子合同</Button>
           </Col>
         </div>
       </Row>

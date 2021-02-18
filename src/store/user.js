@@ -1,11 +1,10 @@
-import {getToken, setToken} from "../assets/js/auth";
+import {getToken, removeToken, setToken} from "../assets/js/auth";
 import {postMgr} from "../assets/js/http";
 
 const userInfo = {
   state: {
     user: {
       userCode: '',
-      userName: ''
     },
     token: getToken()
   },
@@ -18,17 +17,31 @@ const userInfo = {
         sessionStorage.clear();//清空本地用户
       }
     },
-    SET_COOKIE(state, tokenstr) {
+    SET_TOKEN(state, tokenstr) {
       state.token = tokenstr;
+    },
+    SET_USERCODE(state, usercode) {
+      state.user.userCode = usercode;
     }
   },
   actions: {
     Login({commit}, userinfo) {
-      postMgr("/admin/login", userinfo).then(res => {
-        let tokenstr = res.tokenHead + res.token;
-        commit("SET_COOKIE",tokenstr);//vuex 保存usertoken
+      return  postMgr("/admin/login", userinfo).then(res => {
+        let tokenstr = res.data.tokenHead + res.data.token;
+        commit("SET_TOKEN", tokenstr);//vuex 保存usertoken
         setToken(tokenstr);
+
       })
+    },
+    getUserInfo({commit}) {
+      return  postMgr("/admin/userinfo").then(res => {
+        commit('SET_USERCODE', res.data.userCode);
+      })
+    },
+    loginOut({commit, state}) {
+      commit('SET_TOKEN','');
+      commit('SET_USERCODE','');
+      removeToken();
     }
   }
 }

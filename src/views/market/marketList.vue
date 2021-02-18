@@ -1,6 +1,6 @@
 <template>
   <div class="cust_details">
-    <Table height="600" :columns="columns1" :data="data2" ></Table>  </div>
+    <Table  :columns="columns1" :data="data2" ></Table>  </div>
 </template>
 
 <script>

@@ -33,6 +33,7 @@
 </template>
 <script>
   import {STATIC_CONFIG} from "../../assets/js/config";
+  import {setCookie} from "../../assets/js/auth";
   export default {
     name: "login",
     data() {
@@ -71,16 +72,16 @@
           username: this.username,
           password: this.password,
         }
-        // this.$router.push("/");
-        // //发送登陆请求
-        // this.$store.dispatch('Login', reqParam).then(res => {
-        //   setCookie('username', this.username, 15);//cookie存储15天
-        //   setCookie('password', this.password, 15);//cookie存储15天
-        // }).catch(err => {
-        //   this.error = true;
-        //   console.log(err);
-        //   this.errorMsg = "登陆异常";
-        // })
+        //发送登陆请求
+        this.$store.dispatch('Login', reqParam).then(res => {
+          setCookie('username', this.username, 15);//cookie存储15天
+          setCookie('password', this.password, 15);//cookie存储15天
+          this.$router.push("/");
+        }).catch(err => {
+          this.error = true;
+          console.log(err);
+          this.errorMsg = "登陆异常";
+        })
 
       }
     }

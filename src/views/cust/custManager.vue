@@ -6,11 +6,10 @@
   }
 </style>
 <template>
-  <div>
+  <div >
     <cust-search></cust-search>
-    <cust-list></cust-list>
-    <Page class="head_page"  :total="40" size="small" show-elevator show-sizer />
-
+    <cust-list style="max-height: 600px"></cust-list>
+    <Page class="head_page" style=""  :total="40" size="small" show-elevator show-sizer />
   </div>
 </template>
 
