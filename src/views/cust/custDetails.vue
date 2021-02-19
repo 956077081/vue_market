@@ -80,13 +80,13 @@
           </Row>
           <Row>
             <Col span="12">
-              <FormItem label="公司注册时间">
-                <DatePicker type="date" style="width: 200px" v-model="customer.registerTime"></DatePicker>
+              <FormItem label="公司注册时间" >
+                <DatePicker type="date" style="width: 200px"  v-model="customer.registerTime" ></DatePicker>
               </FormItem>
             </Col>
             <Col span="12">
               <FormItem label="行业">
-                <Input type="text" v-model="customer.profession"></Input>
+                <Input type="text"  v-model="customer.profession"></Input>
               </FormItem>
             </Col>
           </Row>
@@ -151,6 +151,7 @@
 
 <script>
   import RequireElement from "../../components/common/requireElement";
+  import dict from "../../assets/js/dict";
 
   export default {
     name: "custDetails",
@@ -159,7 +160,7 @@
       return {
         operate: 'insert',
         customer: {
-          userCode: this.$store.getters.userCode,
+          operatorCode: this.$store.getters.userCode,
           custName: '',
           custType: "01",
           idType: '00',
@@ -174,15 +175,8 @@
           phone: '',
           email: ''
         },
-        compIdTypes: [
-          {label: '营业执照', value: '00'},
-          {label: '组织结构代码', value: '01'},
-          {label: '社会信用代码', value: '02'}
-        ],
-        peopIdTypes: [
-          {label: '身份证号码', value: '00'},
-          {label: '护照', value: '01'}
-        ]
+        compIdTypes: dict.compIdTypes,
+        peopIdTypes: dict.peopIdTypes
       }
     },
     computed: {
@@ -201,6 +195,13 @@
         this.$router.push('/cust/custmanager')
       },
       save() {
+        if(!this.checkParam()){
+          this.$Message.info({
+            background: true,
+            content: '客户基本信息【名称、证件类型、证件号码】不能为空！'
+          });
+          return;
+        }
         this.$postMgr('/customer/create', this.customer).then(res => {
           this.$Message.info({
             background: true,
@@ -213,6 +214,12 @@
             content: '创建客户失败！'
           });
         })
+      },
+      checkParam(){
+        if(this.customer.custName.trim() == '' ||this.customer.custType.trim() == ''||this.customer.idType.trim() == ''||this.customer.idNum.trim() == '' ){
+            return false;
+        }
+        return  true;
       }
     }
   }

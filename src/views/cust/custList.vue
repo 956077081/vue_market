@@ -1,6 +1,7 @@
 <template>
   <div class="cust_details">
-    <Table  :columns="columns1" :data="data2" ></Table>  </div>
+    <Table  :columns="columns1" :data="data2" ></Table>
+  </div>
 </template>
 
 <script>
@@ -9,6 +10,12 @@
     data() {
       return {
         columns1: [
+          {
+            type: 'index',
+            width: 100,
+            align: 'center',
+            title: '序号'
+          },
           {
             title: '客户名称',
             key: 'name'
@@ -26,25 +33,22 @@
             key: 'address'
           },
           {
-            title: '工商注册号',
+            title: '电话',
             key: 'address'
           },
           {
-            title: '注册资本',
+            title: '邮箱',
             key: 'address'
           },
           {
-            title: '客户创建时间',
+            title: '法人名称',
             key: 'updateTime'
           },
           {
-            title: '注册时间',
-            key: 'address'
-          },
-          {
-            title: '操作',
+            title: '地址',
             key: 'address'
           }
+
         ],
         data2: [
           {
@@ -59,8 +63,12 @@
             address: 'London No. 1 Lake Park',
             date: '2016-10-01'
           }
-        ]
+        ],
+        custList:[]
       }
+    },
+    props:{
+
     }
   }
 </script>
