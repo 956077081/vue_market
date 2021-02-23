@@ -12,7 +12,8 @@
 
 
   }
-  .page_main .ivu-row{
+
+  .page_main .ivu-row {
     margin-top: 10px;
     margin-right: 30px;
   }
@@ -24,12 +25,12 @@
       <div><p class="page_main_title">客户查询管理</p></div>
       <div class="page_main">
         <Row>
-          <Col span="4" >
+          <Col span="4">
             <div class='ele_name'>客户名称</div>
           </Col>
           <Col span="4">
             <div>
-              <Input type="text" placeholder="客户名称" v-model="param.custName"></Input>
+              <Input type="text"  placeholder="客户名称" v-model="param.custName"></Input>
             </div>
           </Col>
           <Col span="4">
@@ -38,6 +39,7 @@
           <Col span="4">
             <div>
               <Select v-model="param.idType">
+                <Option  value="">请选择</Option>
                 <Option v-for="idType in IdTypedict " :value="idType.value" :key="idType.value">
                   {{idType.label}}
                 </Option>
@@ -59,44 +61,60 @@
             <div class='ele_name'>行业</div>
           </Col>
           <Col span="4">
-            <div ><Input type="text" placeholder="行业" v-model="param.profession"></Input></div>
+            <div><Input type="text" placeholder="行业" v-model="param.profession"></Input></div>
           </Col>
 
           <Col span="4">
             <div class='ele_name'>创建开始时间</div>
           </Col>
           <Col span="4">
-              <DatePicker type="date"  placeholder="创建开始时间" v-model="param.createTimeStart" ></DatePicker>
+            <DatePicker type="date" placeholder="创建开始时间" v-model="param.createTimeStart"></DatePicker>
           </Col>
           <Col span="4">
             <div class='ele_name'>创建结束时间</div>
           </Col>
           <Col span="4">
-            <DatePicker type="date" placeholder="创建结束时间"  v-model="param.createTimeEnd"></DatePicker>
+            <DatePicker type="date" placeholder="创建结束时间" v-model="param.createTimeEnd"></DatePicker>
           </Col>
         </Row>
         <Row style="padding-top: 20px">
           <div>
             <Col span="2" style="display: flex;">
               <Button @click="search">查询</Button>&nbsp;&nbsp;
-              <Button @click="update">新增客户</Button>
+              <Button @click="insertCust">新增客户</Button>
             </Col>
           </div>
         </Row>
       </div>
     </div>
     <div class="cust_details">
-      <Table :columns="columns1" :data="data2"></Table>
+      <Table :columns="columns1" :data="custList">
+        <template slot-scope="{ row, index }" slot="custType">
+        {{row.custType| getCustTypeLabel}}
+        </template>
+        <template slot-scope="{ row, index }" slot="idType">
+          {{row.idType |getIdTypeLable}}
+        </template>
+        <template slot-scope="{ row, index }" slot="createTime">
+          {{row.createTime|formatTime}}
+        </template>
+        <template slot-scope="{ row, index }" slot="operater" style="text-align: center">
+          <Button size="small" @click="viewDetails">查看详情</Button>
+          <Button size="small" @click="deleteCust">删除</Button>
+          <Button size="small" @click="updateCust">修改</Button>
+        </template>
+      </Table>
     </div>
-    <Page class="head_page"  :total="40" size="small" show-elevator show-sizer/>
+    <Page :current="param.currPage" :page-size="param.pageSize" @on-change="changePage"
+          @on-page-size-change="changePageSize" class="head_page" :total="param.count" size="small" show-elevator
+          show-sizer/>
   </div>
 </template>
 
 <script>
-  import CustSearch from "./custSearch";
-  import CustList from "./custList";
+   const dicts  =dict.compIdTypes.concat(dict.peopIdTypes);
   import dict from "../../assets/js/dict";
-
+   import {formatDate} from "../../assets/js/util";
   export default {
     name: "custManager",
     data() {
@@ -110,73 +128,135 @@
           },
           {
             title: '客户名称',
-            key: 'name'
+            key: 'custName'
           },
           {
             title: '客户类型',
-            key: 'name'
+            key: 'custType',
+            slot:'custType'
           },
           {
             title: '证件类型',
-            key: 'age'
+            key: 'idType',
+            slot:'idType'
           },
           {
             title: '证件号码',
-            key: 'address'
+            key: 'idNum'
           },
           {
             title: '电话',
-            key: 'address'
+            key: 'phone'
           },
           {
             title: '邮箱',
-            key: 'address'
+            key: 'email'
           },
           {
             title: '法人名称',
-            key: 'updateTime'
+            key: 'lawName'
           },
           {
             title: '地址',
             key: 'address'
+          },
+          {
+            title: '创建时间',
+            key: 'createTime',
+            slot:'createTime'
+          },
+          {
+            title: '操作员',
+            key: 'operatorName'
+          },
+          {
+            title: '操作',
+            key: 'operater',
+            slot:'operater'
           }
 
         ],
-        data2: [
-          {
-            name: 'John Brown',
-            age: 18,
-            address: 'New York No. 1 Lake Park',
-            date: '2016-10-03'
-          },
-          {
-            name: 'Jim Green',
-            age: 24,
-            address: 'London No. 1 Lake Park',
-            date: '2016-10-01'
-          }
-        ],
-        param:{
-          custName:'',
-          idType:'01',
-          idNum:'',
-          profession:'',
-          createTimeStart:'',
-          createTimeEnd:'',
+        param: {
+          custName: '',
+          idType: '',
+          idNum: '',
+          profession: '',
+          createTimeStart: null,
+          createTimeEnd: null,
+          pageSize: 10,
+          currPage: 1,
+          count: 0
         },
-        IdTypedict :dict.compIdTypes.concat(dict.peopIdTypes)
+        custList: [],
+        IdTypedict: dicts
       }
     },
-    components: {CustList, CustSearch},
-    methods: {
-      update() {
-        this.$router.push("/cust/custDetails")
+    filters:{
+      getIdTypeLable(value){
+        if(value == undefined || value == null ){
+            return '' ;
+        }
+        for(let i =0;i<dicts.length;i++){
+          if(dicts[i].value == value){
+            return dicts[i].label;
+          }
+        }
       },
-      search(){
-        console.log(dict.compIdTypes)
+      getCustTypeLabel(value){
+        if(value == undefined || value == null ){
+          return '' ;
+        }
+        for (let i =0;i<dict.custTypeDict.length;i++ ){
+          if(dict.custTypeDict[i].value ==value){
+            return dict.custTypeDict[i].label;
+          }
+        }
+      },
+      formatTime(time){
+        if(time !=null){
+          return  formatDate(new Date(time),'yyyy-MM-dd hh:mm:ss');
+        }
+      }
+    },
+    methods: {
+      insertCust() {
+        this.$router.push({path:"/cust/custDetails",query:{operate:'create'}})
+      },
+      search() {
+        this.$postMgr('/customer/list', this.param,'get').then(res => {
+          this.custList = res.data.content;
+          if(this.custList != null && this.custList.length >0  ){
+            this.param.count=  res.data.totalSize;
+          }
+        }).catch(err => {
+          this.$Message.error({
+            background: true,
+            content: '查询失败！'
+          });
+        })
+      },
+      changePage(curr) {
+        this.param.currPage = curr;
+        this.search()
+      },
+      changePageSize(num) {
+        this.param.currPage =1;
+        this.param.pageSize =num;
+        this.search();
+        console.log(this.param)
+      },
+      viewDetails(){
+        this.$router.push({path:'/cust/custDetails',query:{operate:'view'}})
+      },
+      deleteCust(){
+
+      },
+      updateCust(){
+        this.$router.push({path:'/cust/custDetails',query:{operate:'update'}})
       }
     },
     created() {
+      this.search()
     }
   }
 </script>

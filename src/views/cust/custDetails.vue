@@ -2,7 +2,7 @@
 
 </style>
 <template>
-  <div>
+  <div >
     <div class="page_main_title">{{getTitleName}}</div>
     <div class="page_main" style="margin-right: 50px;position: relative;">
       <Form :label-width="200">
@@ -11,8 +11,7 @@
             <FormItem label="客户类型">
               <span slot="label"> <require-element name="客户类型"> </require-element></span>
               <Select v-model="customer.custType" @on-change="changeCustType">
-                <Option value="00">自然人</Option>
-                <Option value="01">公司</Option>
+                <Option v-for="custType in custTypeDict" :key="custType.value" :value ="custType.value">{{custType.label}}</Option>
               </Select>
             </FormItem>
           </Col>
@@ -102,7 +101,7 @@
             <Col span="12">
               <FormItem label="证件类型">
                 <span slot="label"> <require-element name="证件类型"></require-element></span>
-                <Select>
+                <Select v-model="customer.idType">
                   <Option v-for="peopIdType in peopIdTypes " :value="peopIdType.value" :key="peopIdType.value">
                     {{peopIdType.label}}
                   </Option>
@@ -152,7 +151,6 @@
 <script>
   import RequireElement from "../../components/common/requireElement";
   import dict from "../../assets/js/dict";
-
   export default {
     name: "custDetails",
     components: {RequireElement},
@@ -161,9 +159,10 @@
         operate: 'insert',
         customer: {
           operatorCode: this.$store.getters.userCode,
+          operatorName: this.$store.getters.userName,
           custName: '',
           custType: "01",
-          idType: '00',
+          idType: '',
           idNum: '',
           lawName: '',
           lawNum: '',
@@ -176,16 +175,28 @@
           email: ''
         },
         compIdTypes: dict.compIdTypes,
-        peopIdTypes: dict.peopIdTypes
+        peopIdTypes: dict.peopIdTypes,
+        custTypeDict:dict.custTypeDict
       }
     },
     computed: {
       getTitleName: function () {
-        if (this.operate == 'insert') {
-          return '新增客户'
+        if(this.operate == 'create') {
+          return '新增客户';
+        }else if(this.operate == 'view'){
+          return  '查看客户详情';
+        }else  if(this.operate == 'update'){
+          return  '修改客户';
         }
-        return '';
+        this.$router.push("/cust");
+        this.$Message.error({
+          background: true,
+          content: '页面发生错误！'
+        })
       }
+    },
+    created() {
+      this.operate = this.$route.query.operate;
     },
     methods: {
       changeCustType() {
@@ -203,6 +214,13 @@
           return;
         }
         this.$postMgr('/customer/create', this.customer).then(res => {
+          if(res.data!= true){
+            this.$Message.error({
+              background: true,
+              content: '创建客户失败,'+res.mess
+            });
+            return;
+          }
           this.$Message.info({
             background: true,
             content: '创建客户成功！'
@@ -223,6 +241,7 @@
       }
     }
   }
+
 </script>
 
 <style scoped>
