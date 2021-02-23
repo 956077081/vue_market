@@ -7,6 +7,10 @@ const dict = {
   peopIdTypes: [
     {label: '身份证号码', value: '01'},
     {label: '护照', value: '02'}
+  ],
+  custTypeDict: [
+    { label:'个人',value:'00'},
+    { label:'公司',value:'01'}
   ]
 }
 export default dict

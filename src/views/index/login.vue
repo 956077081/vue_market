@@ -47,7 +47,6 @@
     },
     methods: {
       handleLogin: function () {
-        console.log(this.$data)
         var validateParam = [
           {
             name: 'username', label: '账号'

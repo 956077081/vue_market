@@ -2,12 +2,12 @@ import {STATIC_CONFIG} from "./config";
 import axios from "axios";
 import store from "../../store";
 import {getToken} from "./auth";
-import Qs from 'qs'
 import {Message} from "view-design";
+import da from "element-ui/src/locale/lang/da";
 // 创建axios实例
 const service = axios.create({
   baseURL: STATIC_CONFIG.server, // api的base_url
-  timeout: 15000 // 请求超时时间
+  // timeout: 15000 // 请求超时时间
 })
 
 // axios 响应拦截
@@ -44,10 +44,8 @@ Promise.prototype.finally = function (callback) {
     })
   })
 }
-const post = function (url, param = {}, files) {
+const post = function (url, param = {},action, files) {
   return new Promise(((resolve, reject) => {
-    let headers = {'Content-Type': 'application/json;charset=UTF-8'};
-    // let headers = {'Content-Type': 'application/x-www-form-urlencoded'};
     let fileparam = {};
     if (files && files.length > 0) {
       // headers = {'Content-Type': 'multipart/form-data'};
@@ -55,11 +53,19 @@ const post = function (url, param = {}, files) {
         fileparam[file.name] = file;
       })
     }
-    param = {...param, ...fileparam};
+    let method ='post';
+    let param1 ={};
+    if(action){
+      method =action;
+      param1 = param;
+    }else{
+      param1 = {...param, ...fileparam};
+    }
     service({
-      method: 'post',
+      method: method,
       url: url,
-      data: param,
+      data: param1,
+      params:param1
     }).then(res => {
       resolve(res);//成功失败！
     }).catch(err => {
@@ -68,8 +74,8 @@ const post = function (url, param = {}, files) {
   }))
 }
 
-const postMgr = function (url, params = {}, files) {
-  return post(url, params, files);
+const postMgr = function (url, params = {}, action,files) {
+  return post(url, params,action ,files);
 }
 export {
   postMgr

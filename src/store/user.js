@@ -5,6 +5,7 @@ const userInfo = {
   state: {
     user: {
       userCode: '',
+      userName:''
     },
     token: getToken()
   },
@@ -22,6 +23,9 @@ const userInfo = {
     },
     SET_USERCODE(state, usercode) {
       state.user.userCode = usercode;
+    },
+    SET_USERNAME(state, userName) {
+      state.user.userName = userName;
     }
   },
   actions: {
@@ -36,6 +40,7 @@ const userInfo = {
     getUserInfo({commit}) {
       return  postMgr("/admin/userinfo").then(res => {
         commit('SET_USERCODE', res.data.userCode);
+        commit('SET_USERNAME', res.data.userName);
       })
     },
     loginOut({commit, state}) {

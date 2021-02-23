@@ -42,7 +42,7 @@
             </MenuItem>
             <MenuItem name="2" style="padding: 0px">
               <Icon type="md-person" style="  font-size: 25px;"></Icon>
-              张三
+              {{this.$store.getters.userName}}
             </MenuItem>
             <MenuItem name="3" style="padding-right: 0px;padding-top: 0px;padding-bottom: 0px"  >
               <span  @click="loginOut">退出</span>
