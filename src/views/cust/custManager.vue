@@ -9,10 +9,7 @@
     position: relative;
     text-align: right;
     margin-right: 40px;
-
-
   }
-
   .page_main .ivu-row {
     margin-top: 10px;
     margin-right: 30px;
@@ -99,9 +96,8 @@
           {{row.createTime|formatTime}}
         </template>
         <template slot-scope="{ row, index }" slot="operater" style="text-align: center">
-          <Button size="small" @click="viewDetails">查看详情</Button>
-          <Button size="small" @click="deleteCust">删除</Button>
-          <Button size="small" @click="updateCust">修改</Button>
+          <Button size="small" @click="viewDetails(row.code)">查看详情</Button>
+          <Button size="small" @click="updateCust(row.code)">修改</Button>
         </template>
       </Table>
     </div>
@@ -110,10 +106,9 @@
           show-sizer/>
   </div>
 </template>
-
 <script>
    const dicts  =dict.compIdTypes.concat(dict.peopIdTypes);
-  import dict from "../../assets/js/dict";
+  import {dict} from "../../assets/js/dict";
    import {formatDate} from "../../assets/js/util";
   export default {
     name: "custManager",
@@ -196,6 +191,7 @@
         if(value == undefined || value == null ){
             return '' ;
         }
+
         for(let i =0;i<dicts.length;i++){
           if(dicts[i].value == value){
             return dicts[i].label;
@@ -225,6 +221,7 @@
       search() {
         this.$postMgr('/customer/list', this.param,'get').then(res => {
           this.custList = res.data.content;
+          console.log(this.custList)
           if(this.custList != null && this.custList.length >0  ){
             this.param.count=  res.data.totalSize;
           }
@@ -245,14 +242,14 @@
         this.search();
         console.log(this.param)
       },
-      viewDetails(){
-        this.$router.push({path:'/cust/custDetails',query:{operate:'view'}})
+      viewDetails(code){
+        this.$router.push({path:'/cust/custView',query:{code:code}})
       },
       deleteCust(){
 
       },
-      updateCust(){
-        this.$router.push({path:'/cust/custDetails',query:{operate:'update'}})
+      updateCust(code){
+        this.$router.push({path:'/cust/custDetails',query:{operate:'update',code:code}})
       }
     },
     created() {

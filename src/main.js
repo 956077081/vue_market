@@ -10,10 +10,12 @@ import './assets/global.css'
 import  './assets/js/permission'
 import {postMgr} from "./assets/js/http"
 import store from "./store";
+import {getDictLable} from "./assets/js/dict";
+
 Vue.config.productionTip = false
 Vue.use(ivew,{locale})
 Vue.prototype.$postMgr =postMgr
-
+Vue.prototype.$getDictLable =getDictLable
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

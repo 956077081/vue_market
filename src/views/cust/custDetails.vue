@@ -1,6 +1,3 @@
-<style scoped>
-
-</style>
 <template>
   <div >
     <div class="page_main_title">{{getTitleName}}</div>
@@ -10,46 +7,42 @@
           <Col span="12">
             <FormItem label="客户类型">
               <span slot="label"> <require-element name="客户类型"> </require-element></span>
-              <Select v-model="customer.custType" @on-change="changeCustType">
+              <Select v-model="customer.custType" @on-change="changeCustType" :disabled="display.cust4info.disabled">
                 <Option v-for="custType in custTypeDict" :key="custType.value" :value ="custType.value">{{custType.label}}</Option>
               </Select>
             </FormItem>
           </Col>
         </Row>
+        <Row>
         <template v-if="customer.custType =='01'">
-          <Row>
             <Col span="12">
               <FormItem label="公司名称">
                 <span slot="label"> <require-element name="公司名称"></require-element></span>
-                <Input type="text" v-model="customer.custName"></Input>
+                <Input type="text" v-model="customer.custName" ></Input>
               </FormItem>
             </Col>
             <Col span="12">
               <FormItem label="证件类型">
                 <span slot="label"> <require-element name="证件类型"></require-element></span>
-                <Select v-model="customer.idType">
-                  <Option v-for="commIdType in compIdTypes " :value="commIdType.value" :key="commIdType.value">
+                <Select v-model="customer.idType" :disabled="display.cust4info.disabled">
+                  <Option v-for="commIdType in compIdTypes " :value="commIdType.value" :key="commIdType.value" >
                     {{commIdType.label}}
                   </Option>
                 </Select>
               </FormItem>
             </Col>
-          </Row>
-          <Row>
             <Col span="12">
               <FormItem label="证件号码">
                 <span slot="label"> <require-element name="证件号码"></require-element></span>
-                <Input type="text" v-model="customer.idNum"></Input>
+                <Input type="text" v-model="customer.idNum" :disabled="display.cust4info.disabled"></Input>
               </FormItem>
             </Col>
             <Col span="12">
               <FormItem label="法人名称">
                 <span slot="label">法人名称</span>
-                <Input type="text" v-model="customer.lawName"></Input>
+                <Input type="text" v-model="customer.lawName" ></Input>
               </FormItem>
             </Col>
-          </Row>
-          <Row>
 
             <Col span="12">
               <FormItem label="法人身份证件号码">
@@ -63,8 +56,6 @@
                 <Input type="text" v-model="customer.lawMobile"></Input>
               </FormItem>
             </Col>
-          </Row>
-          <Row>
             <Col span="12">
               <FormItem label="注册资本">
                 <InputNumber style="width: auto" :min="0" :max="999999999"
@@ -76,8 +67,6 @@
                 <Input type="email" v-model="customer.email"></Input>
               </FormItem>
             </Col>
-          </Row>
-          <Row>
             <Col span="12">
               <FormItem label="公司注册时间" >
                 <DatePicker type="date" style="width: 200px"  v-model="customer.registerTime" ></DatePicker>
@@ -88,32 +77,28 @@
                 <Input type="text"  v-model="customer.profession"></Input>
               </FormItem>
             </Col>
-          </Row>
         </template>
         <template v-if="customer.custType== '00'">
-          <Row>
             <Col span="12">
               <FormItem label="客户名称">
                 <span slot="label"> <require-element name="客户名称"></require-element></span>
-                <Input type="text" v-model="customer.custName"></Input>
+                <Input type="text" v-model="customer.custName" ></Input>
               </FormItem>
             </Col>
             <Col span="12">
               <FormItem label="证件类型">
                 <span slot="label"> <require-element name="证件类型"></require-element></span>
-                <Select v-model="customer.idType">
+                <Select v-model="customer.idType" :disabled="display.cust4info.disabled">
                   <Option v-for="peopIdType in peopIdTypes " :value="peopIdType.value" :key="peopIdType.value">
                     {{peopIdType.label}}
                   </Option>
                 </Select>
               </FormItem>
             </Col>
-          </Row>
-          <Row>
             <Col span="12">
               <FormItem label="证件号码">
                 <span slot="label"> <require-element name="证件号码"></require-element></span>
-                <Input type="text" v-model="customer.idNum"></Input>
+                <Input type="text" v-model="customer.idNum" :disabled="display.cust4info.disabled"></Input>
               </FormItem>
             </Col>
             <Col span="12">
@@ -121,9 +106,7 @@
                 <Input type="email" v-model="customer.email"></Input>
               </FormItem>
             </Col>
-          </Row>
         </template>
-        <Row>
           <Col span="12">
             <FormItem label="地址">
               <Input type="text" v-model="customer.address"></Input>
@@ -134,12 +117,13 @@
               <Input type="text" v-model="customer.phone"></Input>
             </FormItem>
           </Col>
-        </Row>
-
+    </Row>
         <Row>
           <Col style="text-align: center;margin-top: 30px">
-            <Button size="large" style="background-color:#b6b7ba " @click="save">保存</Button>
-            <Button size="large" style="margin-left: 30px;background-color:#b6b7ba" @click="callBack">返回</Button>
+
+            <Button v-if="this.operate == 'create'" size="large" @click="save">保存</Button>
+            <Button v-if="this.operate == 'update'" size="large" @click="update">保存</Button>
+            <Button size="large" style="margin-left: 30px;" @click="callBack">返回</Button>
           </Col>
         </Row>
       </Form>
@@ -150,13 +134,14 @@
 
 <script>
   import RequireElement from "../../components/common/requireElement";
-  import dict from "../../assets/js/dict";
+  import {dict} from "../../assets/js/dict";
+  import {postMgr} from "../../assets/js/http";
   export default {
     name: "custDetails",
     components: {RequireElement},
     data() {
       return {
-        operate: 'insert',
+        operate: 'create',
         customer: {
           operatorCode: this.$store.getters.userCode,
           operatorName: this.$store.getters.userName,
@@ -176,16 +161,21 @@
         },
         compIdTypes: dict.compIdTypes,
         peopIdTypes: dict.peopIdTypes,
-        custTypeDict:dict.custTypeDict
+        custTypeDict:dict.custTypeDict,
+        display:{
+          cust4info:{
+            disabled:false
+          }
+        }
       }
     },
     computed: {
       getTitleName: function () {
         if(this.operate == 'create') {
           return '新增客户';
-        }else if(this.operate == 'view'){
-          return  '查看客户详情';
         }else  if(this.operate == 'update'){
+          this.display.cust4info.disabled=true;
+          this.queryCust();
           return  '修改客户';
         }
         this.$router.push("/cust");
@@ -233,12 +223,35 @@
           });
         })
       },
+      update(){
+        postMgr('/customer/update/'+this.$route.query.code,this.customer).then(res=>{
+        }).catch(err=>{
+          this.$Message.error({
+            background: true,
+            content: '保存错误!'
+          })
+        })
+        this.$router.push('/cust/custmanager');
+
+      },
       checkParam(){
         if(this.customer.custName.trim() == '' ||this.customer.custType.trim() == ''||this.customer.idType.trim() == ''||this.customer.idNum.trim() == '' ){
             return false;
         }
         return  true;
-      }
+      },
+      queryCust(){
+        postMgr('/customer/get/'+this.$route.query.code).then(res=>{
+          this.customer = res.data ;
+        }).catch(err=>{
+          this.$Message.error({
+            background: true,
+            content: '查询错误!'
+          })
+          this.$router.push('/cust/custmanager');
+        })
+      },
+
     }
   }
 

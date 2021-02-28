@@ -80,10 +80,10 @@
             </Submenu>
             <Submenu name="3">
               <template slot="title">
-                营销管理
+                合同管理
               </template>
-              <MenuItem name="3-1" :to="'/market'">
-                营销查询管理
+              <MenuItem name="3-1" :to="'/contract'">
+                合同查询管理
               </MenuItem>
             </Submenu>
             <MenuItem name="4">
