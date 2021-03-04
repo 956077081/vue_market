@@ -4,6 +4,7 @@
     padding-top: 20px;
     font-size: medium;
   }
+
   .page_main .ele_name {
     position: relative;
     text-align: right;
@@ -15,10 +16,15 @@
     margin-right: 30px;
   }
 
+  .font_move {
+    position: relative;
+    padding-top: 5px;
+    width: 200px;
+  }
 </style>
 <template>
   <div>
-  <div>
+    <div>
       <div><p class="page_main_title">合同查询管理</p></div>
       <div class="page_main">
         <Row>
@@ -63,7 +69,9 @@
             <div>
               <Select v-model="param.status">
                 <Option value="">请选择</Option>
-                <Option v-for="contractStatus  in contractStatusList" :key="contractStatus.value" :value="contractStatus.value" >{{contractStatus.label}}</Option>
+                <Option v-for="contractStatus  in contractStatusList" :key="contractStatus.value"
+                        :value="contractStatus.value">{{contractStatus.label}}
+                </Option>
               </Select>
             </div>
           </Col>
@@ -103,42 +111,97 @@
         </Row>
       </div>
     </div>
-  <div>
-    <Table :columns="contractColumns" :data="contractList">
-      <template slot-scope="{ row, index }" slot="idType">
-        {{getIdtypeLable(row.custType,row.idType)}}
-      </template>
-      <template slot-scope="{ row, index }" slot="status">
-        {{getDict('contractStatus',row.status)}}
-      </template>
-      <template slot-scope="{ row, index }" slot="startTime">
-        {{formatTime(row.startTime)}}
-      </template>
-      <template slot-scope="{ row, index }" slot="endTime">
-        {{formatTime(row.endTime)}}
-      </template>
-      <template slot-scope="{ row, index }" slot="operate">
-        <Button size="small" @click="viewContractDetails(row.code)">查看详情</Button>
-        <Button size="small" @click="updateContract(row.code)">修改</Button>
-      </template>
-    </Table>
+    <div>
+      <Table :columns="contractColumns" :data="contractList">
+        <template slot-scope="{ row, index }" slot="idType">
+          {{getIdtypeLable(row.custType,row.idType)}}
+        </template>
+        <template slot-scope="{ row, index }" slot="status">
+          {{getDict('contractStatus',row.status)}}
+        </template>
+        <template slot-scope="{ row, index }" slot="startTime">
+          {{formatTime(row.startTime)}}
+        </template>
+        <template slot-scope="{ row, index }" slot="endTime">
+          {{formatTime(row.endTime)}}
+        </template>
+        <template slot-scope="{ row, index }" slot="operate">
+          <Button size="small" @click="viewContractDetails(row.code)">查看详情</Button>
+          <Button size="small" @click="updateContract(row.code)">修改</Button>
+          <Button v-if="row.status =='01'" size="small" @click="deleteContract(row.code)">删除</Button>
+          <Button v-if="row.status =='01'" size="small" @click="continueContract(row)">续签</Button>
+        </template>
+      </Table>
+    </div>
+    <Page :current="param.currPage" :page-size="param.pageSize" @on-change="changePage"
+          @on-page-size-change="changePageSize" class="head_page" :total="param.count" size="small" show-elevator
+          show-sizer/>
+
+    <Modal v-model="isConContract" title="续签合同" width="1000" @on-ok="conSignContract" @on-cancel="closeSign">
+      <Form :label-width="100">
+        <Row>
+          <Col span="8">
+            <FormItem label="操作类型">
+              <Select v-model="signAccount.type" @on-change="onchangeAccountType">
+                <Option v-for="type in accountType" :value="type.value" :key="type.value">{{type.label}}</Option>
+              </Select>
+            </FormItem>
+          </Col>
+          <Col span="8" >
+            <FormItem label="打款类型" v-if="signAccount.type==0 ">
+              <Select v-model="signAccount.payType" @on-change="onchangePayType">
+              <Option v-for="type in payTypeDict" :value="type.value" :key="type.value" >{{type.label}}</Option>
+             </Select>
+            </FormItem>
+          </Col>
+          <Col span="8">
+            <FormItem label="打款方式" v-if="signAccount.type==0 &&  signAccount.payType =='00'">
+              <Select v-model="signAccount.payMethod">
+                <Option v-for="type in payMethodDict" :value="type.value" :key="type.value">{{type.label}}</Option>
+              </Select>
+            </FormItem>
+          </Col>
+          <Col span="8" >
+            <FormItem label="金额">
+              <div style="display: flex">
+              <InputNumber style="width: auto" :min="0" :max="999999999"
+                           v-model="signAccount.payMoney"
+                           @keyup.native="filterMoney"></InputNumber>&nbsp;&nbsp; <p class="font_move"> 元</p>
+              </div>
+            </FormItem>
+          </Col>
+          <Col span="8" >
+            <FormItem label="打款账号" >
+              <Input v-model="signAccount.accountNum" maxlength="32"
+                     placeholder="打款账号" style="width: 200px"></Input>
+            </FormItem>
+          </Col>
+          <Col span="8" >
+            <FormItem label="合同到期日期" >
+              <DatePicker type="date" style="width: 200px" v-model="signAccount.endTime"></DatePicker>
+            </FormItem>
+          </Col>
+        </Row>
+
+      </Form>
+    </Modal>
+
   </div>
-  <Page :current="param.currPage" :page-size="param.pageSize" @on-change="changePage"
-        @on-page-size-change="changePageSize" class="head_page" :total="param.count" size="small" show-elevator
-        show-sizer/>
-  </div>
+
+
 </template>
 
 <script>
   import {formatDate} from "../../assets/js/util";
 
   const dicts = dict.compIdTypes.concat(dict.peopIdTypes);
-  import {dict,getDictLable} from "../../assets/js/dict";
+  import {dict, getDictLable} from "../../assets/js/dict";
 
   export default {
     name: "contractManager",
     data() {
       return {
+        isConContract: false,
         param: {
           custName: '',
           idType: '',
@@ -146,12 +209,12 @@
           status,
           startEndTime: null,
           endEndTime: null,
-          operatorName:'',
-          currPage:1,
-          pageSize:10,
-          count:0
+          operatorName: '',
+          currPage: 1,
+          pageSize: 10,
+          count: 0
         },
-        contractColumns:[
+        contractColumns: [
           {
             type: 'index',
             type: 'index',
@@ -161,20 +224,20 @@
           },
           {
             title: '合同名称',
-            key :'contractName'
+            key: 'contractName'
           },
           {
             title: '客户名称',
-            key :'custName'
+            key: 'custName'
           },
           {
             title: '客户证件类型',
-            key :'idType',
-            slot:'idType'
+            key: 'idType',
+            slot: 'idType'
           },
           {
             title: '客户证件号码',
-            key :'idNum'
+            key: 'idNum'
           },
           {
             title: '金额',
@@ -183,7 +246,7 @@
           {
             title: '状态',
             key: 'status',
-            slot:'status'
+            slot: 'status'
           },
           {
             title: '期限/月',
@@ -196,41 +259,54 @@
             slot: 'startTime'
           },
           {
-            title:'到期时间',
+            title: '到期日期',
             key: 'endTime',
             slot: 'endTime'
           },
           {
-            title:'操作员',
+            title: '操作员',
             key: 'operatorName'
           },
           {
-            title:'操作',
+            title: '操作',
             key: 'operate',
             slot: 'operate'
           }
         ],
-        contractList:[],
+        contractList: [],
         IdTypedict: dicts,
-        contractStatusList:dict.contractStatus
+        contractStatusList: dict.contractStatus,
+        accountType: dict.accountType,
+        payTypeDict: dict.payType,
+        payMethodDict: dict.payMethod,
+        signAccount: {
+          code:'',
+          type: '0',
+          payType: '01',
+          payMethod: '',
+          payMoney: 0,
+          accountNum: '',
+          endTime:''
+        },
+
       }
     },
-    methods:{
+    methods: {
       changePage(curr) {
         this.param.currPage = curr;
         this.search()
       },
       changePageSize(num) {
-        this.param.currPage =1;
-        this.param.pageSize =num;
+        this.param.currPage = 1;
+        this.param.pageSize = num;
         this.search();
       },
       search() {
-        this.$postMgr('/contract/list', this.param,'get').then(res => {
+        this.$postMgr('/contract/list', this.param, 'get').then(res => {
           this.contractList = res.data.content;
           console.log(this.contractList)
-          if(this.contractList != null && this.contractList.length >0  ){
-            this.param.count=  res.data.totalSize;
+          if (this.contractList != null && this.contractList.length > 0) {
+            this.param.count = res.data.totalSize;
           }
         }).catch(err => {
           this.$Message.error({
@@ -239,28 +315,68 @@
           });
         })
       },
-      getIdtypeLable(custType,idType){
-        if(custType =='00'){
-            return  getDictLable('peopIdTypes',idType);
-        }else{
-          return  getDictLable('compIdTypes',idType);
+      getIdtypeLable(custType, idType) {
+        if (custType == '00') {
+          return getDictLable('peopIdTypes', idType);
+        } else {
+          return getDictLable('compIdTypes', idType);
         }
-      },getDict(type,value){
-          return getDictLable(type,value);
+      }, getDict(type, value) {
+        return getDictLable(type, value);
       },
-      formatTime(time){
-        if(time !=null){
-          return  formatDate(new Date(time),'yyyy-MM-dd');
+      formatTime(time) {
+        if (time != null) {
+          return formatDate(new Date(time), 'yyyy-MM-dd');
         }
       },
-      viewContractDetails(code){
-
+      filterMoney() {
+        if (this.signAccount.payMoney != null && this.signAccount.payMoney != "") {
+          this.signAccount.payMoney = Number(this.signAccount.payMoney.toFixed(2))
+        }
       },
-      updateContract(code){
-
+      viewContractDetails(code) {
+        this.$router.push({path: '/contract/contractView', query: {'code': code}});
       },
-      insertContract(){
-        this.$router.push({path:'/contract/contractDetails',query:{operate:'create'}});
+      updateContract(code) {
+        this.$router.push({path: '/contract/contractDetails', query: {operate: 'update', code: code}});
+      },
+      deleteContract(code) {
+        this.$postMgr("/contract/delete", {code: code}).then(res => {
+          this.$Message.success({
+            background: true,
+            content: '合同删除成功！'
+          });
+          this.search();
+        }).catch(err => {
+          this.$Message.error({
+            background: true,
+            content: '合同删除失败！'
+          });
+        })
+      },
+      insertContract() {
+        this.$router.push({path: '/contract/contractDetails', query: {operate: 'create'}});
+      },
+      conSignContract() {
+        console.log(this.signAccount)
+      },
+      closeSign() {
+        console.log(this.signAccount)
+      },
+      continueContract(row) {//续签合同
+        this.signAccount.code=row.code;
+        this.isConContract = true;
+      },
+      onchangeAccountType(){
+         if(this.signAccount.type ==1){
+           this.signAccount.payType='';
+           this.signAccount.payMethod='';
+         }
+      },
+      onchangePayType(){
+        if(this.signAccount.payType =='01'){
+            this.signAccount.payMethod='';
+        }
       }
     },
     created() {

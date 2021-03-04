@@ -89,7 +89,7 @@ const routers = [
         component: contractDetails
       },
       {
-        path: 'contactView',
+        path: 'contractView',
         name: 'contractView',
         component: contractView
       }

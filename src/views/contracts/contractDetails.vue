@@ -31,7 +31,7 @@
               <span slot="label"><require-element name="客户名称"></require-element></span>
               <div style="display: flex">
                 <Input v-model="customer.custName" :disabled="true"></Input>
-                <Button style="margin-left: 20px" size="small" @click="displayCustView">选择客户</Button>
+                <Button v-if="operate !='update'" style="margin-left: 20px" size="small" @click="displayCustView">选择客户</Button>
               </div>
               <Modal v-model="displayCustPage" width="1000" title="请选择客户" @on-ok="retCust" @on-cancel="cancleCust">
                 <div class="cust_head">
@@ -118,9 +118,9 @@
           <Col span="8">
             <FormItem>
               <span slot="label"><require-element name="金额"></require-element></span>
-              <InputNumber style="width: auto" :min="0" :max="999999999"
+              <InputNumber style="width: auto" :min="0" :max="999999999" :disabled="operate == 'update'"
                            v-model="account.payMoney"
-                           @keyup.native="filterMoney"></InputNumber>&nbsp;元
+                           @keyup.native="filterMoney" ></InputNumber>&nbsp;元
             </FormItem>
           </Col>
           <Col span="8">
@@ -132,9 +132,8 @@
           <Col span="8">
             <FormItem>
               <span slot="label">期限</span>
-              <InputNumber style="width: auto" :min="0" :max="999999999"
-                           v-model="contractDetails.term"
-                           @keyup.native="filterTerm"></InputNumber>&nbsp;
+              <Input style="width: auto" v-model="contractDetails.term" @keyup.native="filterTerm"></Input>
+              &nbsp;
               月
             </FormItem>
           </Col>
@@ -144,32 +143,35 @@
               <DatePicker type="date" style="width: 200px" v-model="contractDetails.endTime"></DatePicker>
             </FormItem>
           </Col>
-          <Divider orientation="left"><p style="font-size: small"> 打款账户详情</p></Divider>
-          <Col span="8">
-            <FormItem>
-              <span slot="label"><require-element name="支付类型"></require-element></span>
-              <Select v-model="account.payType">
-                <Option v-for=" type in payTypes" :key="type.value" :value="type.value">
-                  {{type.label}}
-                </Option>
-              </Select></FormItem>
-          </Col>
-          <Col span="8" v-if="isHiddenPayMethod">
-            <FormItem>
-              <span slot="label">支付方式</span>
-              <Select v-model="account.payMethod">
-                <Option v-for=" meth in payMethods" :key="meth.value" :value="meth.value">
-                  {{meth.label}}
-                </Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col span="8">
-            <FormItem>
-              <span slot="label">打款账号</span>
-              <Input v-model="account.accountNum"></Input>
-            </FormItem>
-          </Col>
+<!--          修改页面不显示打款详情-->
+          <template v-if="operate != 'update'">
+            <Divider orientation="left"><p style="font-size: small"> 打款账户详情</p></Divider>
+            <Col span="8">
+              <FormItem>
+                <span slot="label"><require-element name="支付类型"></require-element></span>
+                <Select v-model="account.payType">
+                  <Option v-for=" type in payTypes" :key="type.value" :value="type.value">
+                    {{type.label}}
+                  </Option>
+                </Select></FormItem>
+            </Col>
+            <Col span="8" v-if="isHiddenPayMethod">
+              <FormItem>
+                <span slot="label">支付方式</span>
+                <Select v-model="account.payMethod">
+                  <Option v-for=" meth in payMethods" :key="meth.value" :value="meth.value">
+                    {{meth.label}}
+                  </Option>
+                </Select>
+              </FormItem>
+            </Col>
+            <Col span="8">
+              <FormItem>
+                <span slot="label">打款账号</span>
+                <Input v-model="account.accountNum"></Input>
+              </FormItem>
+            </Col>
+          </template>
         </Row>
         <Row>
           <Col style="text-align: center;margin-top: 30px">
@@ -195,25 +197,25 @@
       return {
         operate: '',
         contractDetails: {
+          code: '',
           contractName: '',
           startTime: null,
           endTime: null,
           term: 0,
-          managerCode: this.$store.getters.userCode,
-          operatorCode: this.$store.getters.userCode,
-          operatorName: this.$store.getters.userName
+          managerCode: '',
+          operatorCode: '',
+          operatorName: ''
         },
         account: {
-          payMoney:0,
-          totalMoney: 0,
-          payType: '00',
-          payMethod: 'vx',
+          payMoney: 0,
+          payType: '',
+          payMethod: '',
           accountNum: '',
-          operatorCode: this.$store.getters.userCode,
-          operatorName: this.$store.getters.userName
+          operatorCode: '',
+          operatorName: ''
         },
         customer: {
-          code:'',
+          code: '',
           custCode: '',
           custName: '',
           custType: '',
@@ -276,6 +278,7 @@
         this.createContractName();
         this.title = '合同录入';
       } else if (operate == 'update') {
+        this.code = this.$route.query.code;
         this.title = '合同修改';
       } else {
         this.$router.push("/contract");
@@ -285,6 +288,11 @@
         })
       }
 
+    },
+    mounted() {
+      if (this.operate == 'update') {
+        this.queryContract();
+      }
     },
     computed: {
       isHiddenPayMethod() {
@@ -314,20 +322,30 @@
       }
     },
     methods: {
+
       filterMoney() {
         if (this.account.payMoney != null && this.account.payMoney != "") {
           this.account.payMoney = Number(this.account.payMoney.toFixed(2))
         }
       },
       filterTerm() {
+        this.contractDetails.term = this.contractDetails.term.replace(/[^\.\d]/g, '');
+        this.contractDetails.term = this.contractDetails.term.replace('.', '');
+        if (this.contractDetails.term.length > 4) {
+          this.contractDetails.term = this.contractDetails.term.substr(0, 4);
+          this.$Message.info({
+            content: '期限长度不能大于4位'
+          })
+        }
+
         if (this.contractDetails.startTime != null && this.contractDetails.startTime != "") {
-          this.contractDetails.term = Number(this.contractDetails.term.toFixed(0))
+          this.contractDetails.term = Number(this.contractDetails.term).toFixed(0);
           if (this.contractDetails.term != 0) {
             let date = new Date();
             date.setTime(this.contractDetails.startTime.getTime())
             if (date instanceof Date && !isNaN(this.contractDetails.term)) {
               let givenMonth = date.getMonth();
-              let newMonth = givenMonth + this.contractDetails.term;
+              let newMonth = givenMonth + Number(this.contractDetails.term);
               date.setMonth(newMonth);
               this.contractDetails.endTime = date;
             } else {
@@ -364,24 +382,36 @@
           let param = {
             'contractdetails': this.contractDetails,
             'account': this.account,
-            'customer':this.customer
+            'customer': this.customer
           };
-          console.log(param)
-          this.$postMgr("/contract/save",param).then(res=>{
-              this.$Message.success({
-                background: true,
-                content: '合同保存成功！'
-              });
-              this.$router.push("/contract");
-          }).catch(err =>{
-             this.$Message.error({
-               background: true,
-               content: '保存合同失败！'
-             });
+          this.$postMgr("/contract/save", param).then(res => {
+            this.$Message.success({
+              background: true,
+              content: '合同保存成功！'
+            });
+            this.$router.push("/contract");
+          }).catch(err => {
+            this.$Message.error({
+              background: true,
+              content: '保存合同失败！'
+            });
           })
         }
       },
-
+      queryContract() {
+        this.$postMgr("/contract/get/" + this.code).then(res => {
+          console.log(res)
+          this.contractDetails = res.data.contractdetails;
+          this.customer = res.data.customer;
+          this.account.payMoney =this.contractDetails.totalMoney;
+        }).catch(err => {
+          this.$Message.error({
+            background: true,
+            content: '合同查询失败！'
+          })
+          this.$router.push("/contract");
+        })
+      },
       changePage(curr) {
         this.custParam.currPage = curr;
         this.searchCust()
@@ -405,7 +435,6 @@
         })
       },
       validate() {
-        console.log(this.contractDetails, this.account)
         if (this.customer.code == "" || this.customer.code == null) {
           this.$Message.error({
             background: true,
@@ -429,7 +458,14 @@
         }
       },
       update() {
-
+        this.$postMgr("/contract/update",{'contractdetails':this.contractDetails}).then(res=>{
+            this.$router.push("/contract")
+        }).catch(err=>{
+          this.$Message.error({
+            background: true,
+            content: '合同修改保存失败！'
+          })
+        })
       },
       callBack() {
         this.$router.push("/contract")
