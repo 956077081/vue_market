@@ -119,7 +119,7 @@
             <FormItem>
               <span slot="label"><require-element name="金额"></require-element></span>
               <InputNumber style="width: auto" :min="0" :max="999999999" :disabled="operate == 'update'"
-                           v-model="account.payMoney"
+                           v-model="contractDetails.totalMoney"
                            @keyup.native="filterMoney" ></InputNumber>&nbsp;元
             </FormItem>
           </Col>
@@ -171,6 +171,14 @@
                 <Input v-model="account.accountNum"></Input>
               </FormItem>
             </Col>
+            <Col span="8">
+              <FormItem>
+                <span slot="label">打款金额</span>
+                <InputNumber style="width: auto" :min="0" :max="999999999" :disabled="operate == 'update'"
+                             v-model="account.payMoney"
+                             @keyup.native="filterMoney(account.payMoney)" ></InputNumber>&nbsp;元
+              </FormItem>
+            </Col>
           </template>
         </Row>
         <Row>
@@ -201,6 +209,7 @@
           contractName: '',
           startTime: null,
           endTime: null,
+          totalMoney:0,
           term: 0,
           managerCode: '',
           operatorCode: '',
@@ -323,9 +332,9 @@
     },
     methods: {
 
-      filterMoney() {
-        if (this.account.payMoney != null && this.account.payMoney != "") {
-          this.account.payMoney = Number(this.account.payMoney.toFixed(2))
+      filterMoney(money) {
+        if (money != null && money != "") {
+          money = Number(money.toFixed(2))
         }
       },
       filterTerm() {
