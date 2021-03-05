@@ -10,11 +10,12 @@ export const dict = {
   ],
   custTypeDict: [
     {label: '个人', value: '00'},
-    {label: '公司', value: '01'}
+    {label: '企业', value: '01'}
   ],
   contractStatus: [
     {label: '无效', value: '00'},
     {label: '有效', value: '01'},
+    {label: '结束', value: '02'}
   ],
   payType: [
     {label: '线上支付', value: '00'},
