@@ -12,6 +12,7 @@ import custView from "../views/cust/custView";
 import contractManager from "../views/contracts/contractManager";
 import contractDetails from "../views/contracts/contractDetails";
 import contractView from "../views/contracts/contractView";
+import error from "../views/index/error";
 
 Vue.use(VueRouter)
 
@@ -20,6 +21,11 @@ const routers = [
     path: '/login',
     name: 'login',
     component: login,
+  },
+  {
+    path: '/error',
+    name: 'error',
+    component: error
   },
   {
     path: '/',
@@ -53,26 +59,7 @@ const routers = [
         component: custView
       }
     ]
-  },
-  {
-    path: '/market',
-    name: 'market',
-    component: main,
-    redirect: '/market/marketManager',
-    children: [
-      {
-        path: 'marketManager',
-        name: 'marketManager',
-        component: marketManager
-      },
-      {
-        path: 'marketDetails',
-        name: 'marketDetails',
-        component: markeDetails
-      }
-    ]
-  },
-  {
+  },{
     path: "/contract",
     name: 'contract',
     component: main,
@@ -109,9 +96,13 @@ const routers = [
   }
 
 ]
-
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
 const Router = new VueRouter({
   routes: routers
 })
+
 export default Router;
 

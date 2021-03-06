@@ -34,6 +34,7 @@
 <script>
   import {STATIC_CONFIG} from "../../assets/js/config";
   import {setCookie} from "../../assets/js/auth";
+  import {getCompInfo} from "../../assets/js/project";
   export default {
     name: "login",
     data() {
@@ -42,7 +43,7 @@
         password: "",
         error: false,
         errorMsg: "",
-        company: STATIC_CONFIG.company
+        company: ""
       }
     },
     methods: {
@@ -71,18 +72,39 @@
           username: this.username,
           password: this.password,
         }
+
         //发送登陆请求
         this.$store.dispatch('Login', reqParam).then(res => {
-          setCookie('username', this.username, 15);//cookie存储15天
-          setCookie('password', this.password, 15);//cookie存储15天
           this.$router.push("/");
         }).catch(err => {
           this.error = true;
-          console.log(err);
           this.errorMsg = "登陆异常";
         })
 
       }
+    },
+    created() {
+      window.sessionStorage.clear();
+      let code=  this.$route.query.compCode;
+      if(!code){
+        code="";
+      }
+      window.sessionStorage.setItem("COMPCODE",code.toString().toUpperCase());//给默认值可能为空
+      this.$postMgr("/admin/queryComp").then(res=>{
+       let compInfo ={
+         compName : res.data.compName,
+         groupID: res.data.groupID,
+         compCode:res.data.compCode
+       }
+        this.company =res.data.compName;
+        window.sessionStorage.setItem("COMPCODE",res.data.compCode);//为空时覆盖空值
+        window.sessionStorage.setItem("compInfo",JSON.stringify(compInfo));
+       }).catch(err=>{
+         this.$router.push("/error");
+       })
+    },
+    mounted() {
+
     }
   }
 </script>

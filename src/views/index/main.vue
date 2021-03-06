@@ -58,8 +58,8 @@
         bottom: '0px',
       }">
         <Sider style=" overflow-x: hidden;">
-          <Menu active-name="1-1" theme="dark" width="auto" :open-names="['1']" @on-select="menuSelect">
-            <Submenu name="1">
+          <Menu :active-name="$route.path" theme="dark" width="auto" :open-names="activeMent" accordion @on-select="menuSelect">
+            <Submenu name="/">
               <template slot="title">
                 首页
               </template>
@@ -70,19 +70,19 @@
                 数据分析
               </MenuItem>
             </Submenu>
-            <Submenu name="2">
+            <Submenu name="cust">
               <template slot="title">
                 客户管理
               </template>
-              <MenuItem name="custManager" :to="'/cust'">
+              <MenuItem name="/cust/custmanager" :to="'/cust/custmanager'">
                 客户管理查询
               </MenuItem>
             </Submenu>
-            <Submenu name="3">
+            <Submenu name="contract">
               <template slot="title">
                 合同管理
               </template>
-              <MenuItem name="3-1" :to="'/contract'">
+              <MenuItem name="/contract/contractManager" :to="'/contract/contractManager'">
                 合同查询管理
               </MenuItem>
             </Submenu>
@@ -107,6 +107,7 @@
   import custManager from "../cust/custManager";
   import custDetails from "../cust/custDetails";
   import Contain from "./contain";
+  import {getCompInfo} from "../../assets/js/project";
 
   export default {
     components: {
@@ -126,12 +127,21 @@
         // // this.$router.push("/cust");
         // this.curContain =name;
       },
-      loginOut(){
+      loginOut() {
         this.$store.dispatch('loginOut');
-        this.$router.push("/login");
+        this.$router.push({path: "/login", query: {compCode: getCompInfo().compCode}});
       }
     },
-
+    created() {
+      console.log(this.$route.path)
+    },
+    computed: {
+      activeMent() {
+        let router = this.$route.path;
+        let routs = router.split('/');
+        return routs;
+      }
+    }
   }
 </script>
 

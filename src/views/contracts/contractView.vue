@@ -197,9 +197,9 @@
       },
       getIdTypeDictValue() {
         if (this.customer.custType == "00") {
-          return getDictLable('peopIdTypes', this.customer.custType);
+          return getDictLable('peopIdTypes', this.customer.idType);
         } else if (this.customer.custType == "01") {
-          return getDictLable('peopIdTypes', this.customer.custType);
+          return getDictLable('compIdTypes', this.customer.idType);
         }
         return '';
       },

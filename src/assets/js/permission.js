@@ -2,7 +2,7 @@ import Router from "../../router";
 import {getToken} from "./auth";
 import store from "../../store";
 
-const whiteList = ['/login'];
+const whiteList = ['/login','/error'];
 Router.beforeEach((to, from, next) => {
   if (getToken()) {
     if (to.path == '/login') {

@@ -127,8 +127,8 @@
         </template>
         <template slot-scope="{ row, index }" slot="operate">
           <Button size="small" @click="viewContractDetails(row.code)">查看详情</Button>
-          <Button size="small" @click="updateContract(row.code)">修改</Button>
-          <Button v-if="row.status =='01'" size="small" @click="deleteContract(row.code)">删除</Button>
+          <Button v-if="row.status =='01'"  size="small" @click="updateContract(row.code)">修改</Button>
+          <Button v-if="row.status =='01'" size="small" @click="deleteContract(row.code)">失效</Button>
           <Button v-if="row.status =='01'" size="small" @click="continueContract(row)">续签</Button>
         </template>
       </Table>
@@ -198,6 +198,7 @@
   import {dict, getDictLable} from "../../assets/js/dict";
 
   export default {
+    inject: ['reload'],
     name: "contractManager",
     data() {
       return {
@@ -344,13 +345,13 @@
         this.$postMgr("/contract/delete", {code: code}).then(res => {
           this.$Message.success({
             background: true,
-            content: '合同删除成功！'
+            content: '合同置失效成功！'
           });
           this.search();
         }).catch(err => {
           this.$Message.error({
             background: true,
-            content: '合同删除失败！'
+            content: '合同置失效失败！'
           });
         })
       },
@@ -358,6 +359,7 @@
         this.$router.push({path: '/contract/contractDetails', query: {operate: 'create'}});
       },
       conSignContract() {
+        this.reload();
         console.log(this.signAccount)
       },
       closeSign() {
@@ -366,6 +368,7 @@
       continueContract(row) {//续签合同
         this.signAccount.code=row.code;
         this.isConContract = true;
+        this.$router.push("/contract");
       },
       onchangeAccountType(){
          if(this.signAccount.type ==1){
