@@ -13,12 +13,13 @@ import contractManager from "../views/contracts/contractManager";
 import contractDetails from "../views/contracts/contractDetails";
 import contractView from "../views/contracts/contractView";
 import error from "../views/index/error";
+import employeeManager from "../views/system/employeeManager";
 
 Vue.use(VueRouter)
 
 const routers = [
   {
-    path: '/login',
+    "path": '/login',
     name: 'login',
     component: login,
   },
@@ -83,14 +84,15 @@ const routers = [
     ]
   },
   {
-    path: '/head',
-    name: 'head',
+    path: '/system',
+    name: 'system',
     component: main,
+    redirect: employeeManager,
     children: [
       {
-        path: 'dataAnaly',
-        name: 'dataAnaly',
-        component: dataAnaly
+        path: 'employeeManager',
+        name: 'employeeManager',
+        component: employeeManager
       }
     ]
   }

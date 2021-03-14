@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-top: 30px;margin-left: 20px">
+  <div style="margin-top: 5px;margin-left: 10px;margin-right: 5px">
     <transition name="fade" mode="out-in">
 <!--    <keep-alive>-->
     <!-- <router-view :key="key"></router-view> -->

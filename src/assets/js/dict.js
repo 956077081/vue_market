@@ -34,6 +34,9 @@ export const dict = {
   accountType: [
     {label: '打款', value: '0'},
     {label: '扣款', value: '1' }
+  ],
+  roleType:[
+
   ]
 }
 

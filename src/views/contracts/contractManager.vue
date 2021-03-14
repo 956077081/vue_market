@@ -5,16 +5,6 @@
     font-size: medium;
   }
 
-  .page_main .ele_name {
-    position: relative;
-    text-align: right;
-    margin-right: 40px;
-  }
-
-  .page_main .ivu-row {
-    margin-top: 10px;
-    margin-right: 30px;
-  }
 
   .font_move {
     position: relative;
@@ -76,14 +66,22 @@
             </div>
           </Col>
           <Col span="4">
+            <div class='ele_name'>合同编号</div>
+          </Col>
+          <Col span="4">
+            <div>
+              <Input type="text" placeholder="合同编号" v-model="param.contractName"></Input>
+            </div>
+          </Col>
+          <Col span="4">
             <div class='ele_name'>操作员名称</div>
           </Col>
-
           <Col span="4">
             <div>
               <Input type="text" placeholder="操作员名称" v-model="param.operatorName"></Input>
             </div>
           </Col>
+
         </Row>
         <Row>
           <Col span="4">
@@ -126,18 +124,18 @@
           {{formatTime(row.endTime)}}
         </template>
         <template slot-scope="{ row, index }" slot="operate">
-          <Button size="small" @click="viewContractDetails(row.code)">查看详情</Button>
+          <Button  size="small" @click="viewContractDetails(row.code)">查看详情</Button>
           <Button v-if="row.status =='01'"  size="small" @click="updateContract(row.code)">修改</Button>
           <Button v-if="row.status =='01'" size="small" @click="deleteContract(row.code)">失效</Button>
-          <Button v-if="row.status =='01'" size="small" @click="continueContract(row)">续签</Button>
+          <Button v-if="row.status =='01'" @click="continueContract(row)">打款</Button>
         </template>
       </Table>
     </div>
     <Page :current="param.currPage" :page-size="param.pageSize" @on-change="changePage"
-          @on-page-size-change="changePageSize" class="head_page" :total="param.count" size="small" show-elevator
+          @on-page-size-change="changePageSize" class="head_page" :total="param.count" size="small" :page-size-opts="pageOps" show-elevator
           show-sizer/>
 
-    <Modal v-model="isConContract" title="续签合同" width="1000" @on-ok="conSignContract" @on-cancel="closeSign">
+    <Modal v-model="isConContract" title="合同打款" width="1000" @on-ok="conSignContract" @on-cancel="closeSign">
       <Form :label-width="100">
         <Row>
           <Col span="8">
@@ -171,14 +169,9 @@
             </FormItem>
           </Col>
           <Col span="8" >
-            <FormItem label="打款账号" >
+            <FormItem label="账户" >
               <Input v-model="signAccount.accountNum" maxlength="32"
-                     placeholder="打款账号" style="width: 200px"></Input>
-            </FormItem>
-          </Col>
-          <Col span="8" >
-            <FormItem label="合同到期日期" >
-              <DatePicker type="date" style="width: 200px" v-model="signAccount.endTime"></DatePicker>
+                     placeholder="账户" style="width: 200px"></Input>
             </FormItem>
           </Col>
         </Row>
@@ -196,6 +189,7 @@
 
   const dicts = dict.compIdTypes.concat(dict.peopIdTypes);
   import {dict, getDictLable} from "../../assets/js/dict";
+  import {closeLoading, showloading} from "../../assets/js/common";
 
   export default {
     inject: ['reload'],
@@ -203,6 +197,7 @@
     data() {
       return {
         isConContract: false,
+        pageOps:[5,10,20,30,40],
         param: {
           custName: '',
           idType: '',
@@ -211,8 +206,9 @@
           startEndTime: null,
           endEndTime: null,
           operatorName: '',
+          contractName:'',
           currPage: 1,
-          pageSize: 10,
+          pageSize: 5,
           count: 0
         },
         contractColumns: [
@@ -224,7 +220,7 @@
             title: '序号'
           },
           {
-            title: '合同名称',
+            title: '合同编号',
             key: 'contractName'
           },
           {
@@ -281,13 +277,12 @@
         payTypeDict: dict.payType,
         payMethodDict: dict.payMethod,
         signAccount: {
-          code:'',
+          contractCode:'',
           type: '0',
           payType: '01',
           payMethod: '',
           payMoney: 0,
           accountNum: '',
-          endTime:''
         },
 
       }
@@ -305,7 +300,6 @@
       search() {
         this.$postMgr('/contract/list', this.param, 'get').then(res => {
           this.contractList = res.data.content;
-          console.log(this.contractList)
           if (this.contractList != null && this.contractList.length > 0) {
             this.param.count = res.data.totalSize;
           }
@@ -359,14 +353,26 @@
         this.$router.push({path: '/contract/contractDetails', query: {operate: 'create'}});
       },
       conSignContract() {
+        this.$postMgr("/account/insert",this.signAccount).then(res=>{
+          this.$Message.success({
+            background: true,
+            content:'资金添加成功！',
+          })
+        }).catch(err=>{
+          console.log("失败",err)
+          this.$Message.error({
+            background: true,
+            duration:3,
+            content:'合同打款金额操作失败！'+err.data.mess
+          })
+        });
         this.reload();
-        console.log(this.signAccount)
       },
       closeSign() {
-        console.log(this.signAccount)
+        this.signAccount.contractCode ='';
       },
       continueContract(row) {//续签合同
-        this.signAccount.code=row.code;
+        this.signAccount.contractCode=row.code;
         this.isConContract = true;
         this.$router.push("/contract");
       },
@@ -383,7 +389,7 @@
       }
     },
     created() {
-      this.search()
+      this.search();
     }
   }
 </script>

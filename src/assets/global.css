@@ -5,3 +5,13 @@
 .page_main_title{
   font-family: Arial;font-size: medium;font-weight: lighter;margin-left: 30px
 }
+.page_main .ele_name {
+  position: relative;
+  margin-right: 40px;
+  text-align: center;
+
+}
+.page_main .ivu-row {
+  margin-top: 10px;
+  margin-right: 30px;
+}

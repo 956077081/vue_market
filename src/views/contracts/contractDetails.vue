@@ -333,8 +333,9 @@
     methods: {
 
       filterMoney(money) {
+
         if (money != null && money != "") {
-          money = Number(money.toFixed(2))
+          money = Number(money).toFixed(2);
         }
       },
       filterTerm() {
@@ -387,7 +388,7 @@
         this.customer.code = '';
       },
       save() {
-        if (!this.validate()) {
+        if (this.validate()&&this.validateAccount()) {
           let param = {
             'contractdetails': this.contractDetails,
             'account': this.account,
@@ -402,14 +403,13 @@
           }).catch(err => {
             this.$Message.error({
               background: true,
-              content: '保存合同失败！'
+              content: '保存合同失败,'+err.data.mess
             });
           })
         }
       },
       queryContract() {
         this.$postMgr("/contract/get/" + this.code).then(res => {
-          console.log(res)
           this.contractDetails = res.data.contractdetails;
           this.customer = res.data.customer;
           this.account.payMoney =this.contractDetails.totalMoney;
@@ -451,22 +451,37 @@
           })
           return false;
         }
-        if (this.account.payMoney == null || this.contractDetails.contractName == "" || this.contractDetails.startTime == "" | this.contractDetails.endTime == "") {
+        if (this.contractDetails.totalMoney == null || this.contractDetails.contractName == "" || this.contractDetails.startTime == "" | this.contractDetails.endTime == "") {
           this.$Message.error({
             background: true,
             content: '合同模块必填字段不能为空！'
           })
           return false;
         }
-        if (this.contractDetails.startTime >= this.contractDetails.endTime) {
+
+        if (this.contractDetails.startTime > this.contractDetails.endTime) {
           this.$Message.error({
             background: true,
             content: '到期日期应该大于合同开始日期！'
           })
           return false;
         }
+        return true;
+      },
+      validateAccount(){
+          if(this.account.payType == ""){
+            this.$Message.error({
+              background: true,
+              content: '打款必填字段不能为空！'
+            })
+            return false;
+          }
+          return true;
       },
       update() {
+        if(!this.validate()){
+          return;
+        }
         this.$postMgr("/contract/update",{'contractdetails':this.contractDetails}).then(res=>{
             this.$router.push("/contract")
         }).catch(err=>{

@@ -1,26 +1,33 @@
 import {STATIC_CONFIG} from "./config";
 import axios from "axios";
 import store from "../../store";
-import {getToken} from "./auth";
-import {Message} from "view-design";
-import da from "element-ui/src/locale/lang/da";
+import {getToken, removeToken} from "./auth";
+import {closeLoading, showloading} from "./common";
 // 创建axios实例
 const service = axios.create({
   baseURL: STATIC_CONFIG.server, // api的base_url
   // timeout: 15000 // 请求超时时间
 })
 
+// 请求执行顺序 先加载Promise的finally-》 service.interceptors.request-》service.interceptors.response-》axios.then
 // axios 响应拦截
 service.interceptors.response.use(resp => {
   const  res= resp.data;
   if(res.code != 200){
-    Message.info(res);
-    return Promise.reject('error');
+    return Promise.reject(resp);
+  }
+  if(res.code== 401){//登录过期
+      this.$Message.info({
+        content:'您的登录时间已过期请重新登录',
+        duration:3,
+        background: true
+      })
+      this.$store.loginOut();
   }
   return Promise.resolve(resp.data);
 }, error => {
-  console.log("请求失败！")
-  return Promise.reject(error);
+  console.log("响应失败！",error);
+  return Promise.reject(error.data);
 })
 // axios 请求拦截器
 service.interceptors.request.use(config => {
@@ -30,20 +37,21 @@ service.interceptors.request.use(config => {
   }
   return config
 }, error => {
-  console.log(error) // for debug
+  console.log("请求失败",error) // for debug
   return Promise.reject(error)
 })
-Promise.prototype.finally = function (callback) {
-  let pro = this.constructor;
-  return this.then(value => {
-    pro.resolve(callback()).then(() => value)
-  }, reject => {
-    console.log("异步失败！");
-    pro.resolve(callback()).then(() => {
-      throw reject
-    })
-  })
-}
+// Promise.prototype.finally = function (callback) {
+//   console.log(callback)
+//   let pro = this.constructor;
+//   return this.then(value => {
+//     pro.resolve(callback()).then(() => value)
+//   }, reject => {
+//     console.log("异步失败！",reject);
+//     pro.resolve(callback()).then(() => {
+//       throw reject
+//     })
+//   })
+// }
 const post = function (url, param = {},action, files) {
   return new Promise(((resolve, reject) => {
     let fileparam = {};
@@ -61,14 +69,18 @@ const post = function (url, param = {},action, files) {
     }else{
       param1 = {...param, ...fileparam};
     }
+    closeLoading();//先关闭
+    showloading();//在开启
     service({
       method: method,
       url: url,
       data: param1,
       params:param1
     }).then(res => {
-      resolve(res);//成功失败！
+      closeLoading();
+      resolve(res);//成功！
     }).catch(err => {
+      closeLoading();
       reject(err);//失败！
     })
   }))

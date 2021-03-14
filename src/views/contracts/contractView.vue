@@ -176,11 +176,9 @@
     },
     mounted() {
       this.$postMgr("/contract/get/"+this.code).then(res=>{
-        console.log(res)
         this.customer =res.data.customer;
         this.accountList=res.data.accountMoneyDetails;
         this.contractDetails =res.data.contractdetails;
-        console.log( this.customer )
       }).catch(err=>{
         this.$Message.error({
           background: true,

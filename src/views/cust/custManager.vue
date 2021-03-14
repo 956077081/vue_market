@@ -5,15 +5,7 @@
     font-size: medium;
   }
 
-  .page_main .ele_name {
-    position: relative;
-    text-align: right;
-    margin-right: 40px;
-  }
-  .page_main .ivu-row {
-    margin-top: 10px;
-    margin-right: 30px;
-  }
+
 
 </style>
 <template>
@@ -78,14 +70,15 @@
           <div>
             <Col span="2" style="display: flex;">
               <Button @click="search">查询</Button>&nbsp;&nbsp;
-              <Button @click="insertCust">新增客户</Button>
+              <Button @click="insertCust">新增客户</Button>&nbsp;
+              <Button @click="sendMsg">发送短信</Button>
             </Col>
           </div>
         </Row>
       </div>
     </div>
     <div class="cust_details">
-      <Table :columns="columns1" :data="custList">
+      <Table ref="custList" :columns="columns1" :data="custList" >
         <template slot-scope="{ row, index }" slot="custType">
         {{row.custType| getCustTypeLabel}}
         </template>
@@ -104,6 +97,12 @@
     <Page :current="param.currPage" :page-size="param.pageSize" @on-change="changePage"
           @on-page-size-change="changePageSize" class="head_page" :total="param.count" size="small" show-elevator
           show-sizer/>
+
+    <Modal v-model="isSendSms" title="发送短信" width="500" @on-ok="send" @on-cancel="closeSend">
+      <Form>
+        <FormItem label="">功能即将上线敬请稍等</FormItem>
+      </Form>
+    </Modal>
   </div>
 </template>
 <script>
@@ -114,7 +113,13 @@
     name: "custManager",
     data() {
       return {
+        isSendSms:false,
         columns1: [
+          {
+            type: 'selection',
+            width: 60,
+            align: 'center'
+          },
           {
             type: 'index',
             width: 100,
@@ -218,10 +223,23 @@
       insertCust() {
         this.$router.push({path:"/cust/custDetails",query:{operate:'create'}})
       },
+      sendMsg(){
+       let  custs=   this.$refs.custList.getSelection();
+       if(custs.length ==1 ){//单人发送
+          this.isSendSms =true;
+       }else if (custs.length>1){//多人发送
+         this.isSendSms =true;
+       }
+      },
+      send(){//发送短信
+
+      },
+      closeSend(){//取消发送
+
+      },
       search() {
         this.$postMgr('/customer/list', this.param,'get').then(res => {
           this.custList = res.data.content;
-          console.log(this.custList)
           if(this.custList != null && this.custList.length >0  ){
             this.param.count=  res.data.totalSize;
           }
@@ -240,7 +258,6 @@
         this.param.currPage =1;
         this.param.pageSize =num;
         this.search();
-        console.log(this.param)
       },
       viewDetails(code){
         this.$router.push({path:'/cust/custView',query:{code:code}})

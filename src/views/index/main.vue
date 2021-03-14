@@ -58,16 +58,13 @@
         bottom: '0px',
       }">
         <Sider style=" overflow-x: hidden;">
-          <Menu :active-name="$route.path" theme="dark" width="auto" :open-names="activeMent" accordion @on-select="menuSelect">
+          <Menu :active-name="$route.path" theme="dark" width="auto" :open-names="activeMent"  @on-select="menuSelect">
             <Submenu name="/">
               <template slot="title">
                 首页
               </template>
               <MenuItem name="1-1" :to="'/'">
                 消息提醒
-              </MenuItem>
-              <MenuItem name="1-2" :to="'/head/dataAnaly'">
-                数据分析
               </MenuItem>
             </Submenu>
             <Submenu name="cust">
@@ -86,16 +83,18 @@
                 合同查询管理
               </MenuItem>
             </Submenu>
-            <MenuItem name="4">
-              报表管理
-            </MenuItem>
-            <MenuItem name="5">
-              系统管理管理
-            </MenuItem>
+            <Submenu name="system">
+              <template slot="title">
+                系统管理管理
+              </template>
+              <MenuItem name="/system/employeeManager" :to="'/system/employeeManager'">
+                员工管理
+              </MenuItem>
+            </Submenu>
           </Menu>
         </Sider>
-        <Content style="height: auto">
-          <contain></contain>
+        <Content style="padding: 10px ">
+          <contain ></contain>
         </Content>
       </Layout>
     </Layout>
@@ -133,7 +132,7 @@
       }
     },
     created() {
-      console.log(this.$route.path)
+      console.log(this.$router.options.routes)
     },
     computed: {
       activeMent() {

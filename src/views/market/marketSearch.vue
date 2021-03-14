@@ -1,11 +1,4 @@
 <style scoped>
-
-  .page_main .ele_name {
-    position: relative;
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-top: 10px;
-  }
 </style>
 <template>
   <div>
