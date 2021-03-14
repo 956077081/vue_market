@@ -7,7 +7,8 @@ const userInfo = {
       userCode: '',
       userName:''
     },
-    token: getToken()
+    token: getToken(),
+    menus:[]
   },
   mutations: {
     updateUserInfo(state, userinfo = {}) {
@@ -26,6 +27,9 @@ const userInfo = {
     },
     SET_USERNAME(state, userName) {
       state.user.userName = userName;
+    },
+    SET_MENUS(state,menus){
+      state.user.menus=menus;
     }
   },
   actions: {

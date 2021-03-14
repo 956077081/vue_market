@@ -5,8 +5,6 @@
     font-size: medium;
   }
 
-
-
 </style>
 <template>
   <div>
@@ -66,14 +64,12 @@
             <DatePicker type="date" placeholder="创建结束时间" v-model="param.createTimeEnd"></DatePicker>
           </Col>
         </Row>
-        <Row style="padding-top: 20px">
-          <div>
-            <Col span="2" style="display: flex;">
-              <Button @click="search">查询</Button>&nbsp;&nbsp;
+        <Row style="padding-top:5px;padding-bottom: 5px">
+            <Col span="4" >
+             <Button style="margin-left: 20px" @click="search">查询</Button>&nbsp;&nbsp;
               <Button @click="insertCust">新增客户</Button>&nbsp;
               <Button @click="sendMsg">发送短信</Button>
             </Col>
-          </div>
         </Row>
       </div>
     </div>

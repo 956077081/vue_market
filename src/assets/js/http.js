@@ -27,7 +27,7 @@ service.interceptors.response.use(resp => {
   return Promise.resolve(resp.data);
 }, error => {
   console.log("响应失败！",error);
-  return Promise.reject(error.data);
+  return Promise.reject(error);
 })
 // axios 请求拦截器
 service.interceptors.request.use(config => {
@@ -62,24 +62,30 @@ const post = function (url, param = {},action, files) {
       })
     }
     let method ='post';
-    let param1 ={};
+    let postparam ={};//post请求参数
+    let pathparam={};//路由参数
     if(action){
       method =action;
-      param1 = param;
-    }else{
-      param1 = {...param, ...fileparam};
     }
+    if(method =='post'){
+      pathparam=null;
+      postparam = {...param, ...fileparam};
+    }else{
+      pathparam = param;
+    }
+
     closeLoading();//先关闭
     showloading();//在开启
     service({
       method: method,
       url: url,
-      data: param1,
-      params:param1
+      data: postparam,
+      params:pathparam
     }).then(res => {
       closeLoading();
       resolve(res);//成功！
     }).catch(err => {
+      console.log(err)
       closeLoading();
       reject(err);//失败！
     })

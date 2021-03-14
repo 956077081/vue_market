@@ -35,9 +35,17 @@ export const dict = {
     {label: '打款', value: '0'},
     {label: '扣款', value: '1' }
   ],
-  roleType:[
 
-  ]
+  validStatus:[
+    {label: '无效', value: '0'},
+    {label: '有效', value: '1' }
+  ],
+
+
+  roleType:[
+    {label: '管理员', value: 'manager'},
+    {label: '普通员工', value: 'emp' }
+  ],
 }
 
 export function getDictLable(type, value) {
