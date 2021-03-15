@@ -73,7 +73,7 @@
         </Row>
       </div>
     </div>
-    <div class="cust_details">
+    <div >
       <Table ref="custList" :columns="columns1" :data="custList" >
         <template slot-scope="{ row, index }" slot="custType">
         {{row.custType| getCustTypeLabel}}

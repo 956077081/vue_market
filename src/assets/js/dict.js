@@ -41,7 +41,6 @@ export const dict = {
     {label: '有效', value: '1' }
   ],
 
-
   roleType:[
     {label: '管理员', value: 'manager'},
     {label: '普通员工', value: 'emp' }
