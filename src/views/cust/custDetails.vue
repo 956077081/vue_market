@@ -150,7 +150,7 @@
 
 <script>
   import RequireElement from "../../components/common/requireElement";
-  import {dict, getDictByType} from "../../assets/js/dict";
+  import {getDictByType} from "../../assets/js/dict";
   import {postMgr} from "../../assets/js/http";
 
   export default {
@@ -178,9 +178,9 @@
           phone: '',
           email: ''
         },
-        compIdTypes: dict.compIdTypes,
-        peopIdTypes: dict.peopIdTypes,
-        custTypeDict: dict.custTypeDict,
+        compIdTypes: getDictByType('compIdTypes'),
+        peopIdTypes: getDictByType('peopIdTypes'),
+        custTypeDict: getDictByType('custTypeDict'),
         sexDict: getDictByType('sex'),
         display: {
           cust4info: {

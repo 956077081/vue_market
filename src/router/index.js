@@ -81,8 +81,8 @@ const routers = [
     ]
   },
   {
-    path: '/system',
-    name: 'system',
+    path: '/employee',
+    name: 'employee',
     component: main,
     redirect: employeeManager,
     children: [

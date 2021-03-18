@@ -32,9 +32,6 @@
   </div>
 </template>
 <script>
-  import {STATIC_CONFIG} from "../../assets/js/config";
-  import {setCookie} from "../../assets/js/auth";
-  import {getCompInfo} from "../../assets/js/project";
   export default {
     name: "login",
     data() {
@@ -78,7 +75,7 @@
           this.$router.push("/");
         }).catch(err => {
           this.error = true;
-          this.errorMsg = "登陆异常";
+          this.errorMsg = "登陆异常"+err.data.mess;
         })
 
       }

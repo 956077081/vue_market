@@ -25,9 +25,9 @@
           </Col>
           <Col span="4">
             <div>
-              <Select v-model="param.idType">
-                <Option  value="">请选择</Option>
-                <Option v-for="idType in IdTypedict " :value="idType.value" :key="idType.value">
+              <Select v-model="param.idType" clearable>testdict
+
+                <Option v-for="idType in idTypeDict " :value="idType.value" :key="idType.value">
                   {{idType.label}}
                 </Option>
               </Select>
@@ -65,7 +65,7 @@
           </Col>
         </Row>
         <Row style="padding-top:5px;padding-bottom: 5px">
-            <Col span="4" >
+            <Col span="8" >
              <Button style="margin-left: 20px" @click="search">查询</Button>&nbsp;&nbsp;
               <Button @click="insertCust">新增客户</Button>&nbsp;
               <Button @click="sendMsg">发送短信</Button>
@@ -79,7 +79,7 @@
         {{row.custType| getCustTypeLabel}}
         </template>
         <template slot-scope="{ row, index }" slot="idType">
-          {{row.idType |getIdTypeLable}}
+          {{getIdTypeLable(row.idType)}}
         </template>
         <template slot-scope="{ row, index }" slot="createTime">
           {{row.createTime|formatTime}}
@@ -102,9 +102,9 @@
   </div>
 </template>
 <script>
-   const dicts  =dict.compIdTypes.concat(dict.peopIdTypes);
-  import {dict} from "../../assets/js/dict";
+  import { getDictByType} from "../../assets/js/dict";
    import {formatDate} from "../../assets/js/util";
+
   export default {
     name: "custManager",
     data() {
@@ -172,6 +172,7 @@
           }
 
         ],
+        idTypeDict:getDictByType('compIdTypes').concat(getDictByType('peopIdTypes')),
         param: {
           custName: '',
           idType: '',
@@ -184,28 +185,20 @@
           count: 0
         },
         custList: [],
-        IdTypedict: dicts
+        compTypeDict:getDictByType('compIdTypes'),
+        pepTypeDict:getDictByType('peopIdTypes')
       }
     },
     filters:{
-      getIdTypeLable(value){
-        if(value == undefined || value == null ){
-            return '' ;
-        }
 
-        for(let i =0;i<dicts.length;i++){
-          if(dicts[i].value == value){
-            return dicts[i].label;
-          }
-        }
-      },
       getCustTypeLabel(value){
         if(value == undefined || value == null ){
           return '' ;
         }
-        for (let i =0;i<dict.custTypeDict.length;i++ ){
-          if(dict.custTypeDict[i].value ==value){
-            return dict.custTypeDict[i].label;
+     let custdict= getDictByType('custTypeDict');
+        for (let i =0;i<custdict.length;i++ ){
+          if(custdict[i].value ==value){
+            return custdict[i].label;
           }
         }
       },
@@ -216,6 +209,17 @@
       }
     },
     methods: {
+      getIdTypeLable(value){
+        if(value == undefined || value == null ){
+          return '' ;
+        }
+
+        for (let i=0;i<this.idTypeDict.length;i++){
+          if(this.idTypeDict[i].value ==value){
+            return this.idTypeDict[i].label;
+          }
+        }
+      },
       insertCust() {
         this.$router.push({path:"/cust/custDetails",query:{operate:'create'}})
       },
@@ -266,7 +270,7 @@
       }
     },
     created() {
-      this.search()
+      this.search();
     }
   }
 </script>

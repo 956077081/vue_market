@@ -32,8 +32,7 @@
           </Col>
           <Col span="4">
             <div>
-              <Select v-model="param.idType">
-                <Option value="">请选择</Option>
+              <Select v-model="param.idType" clearable>
                 <Option v-for="idType in IdTypedict " :value="idType.value" :key="idType.value">
                   {{idType.label}}
                 </Option>
@@ -187,9 +186,7 @@
 <script>
   import {formatDate} from "../../assets/js/util";
 
-  const dicts = dict.compIdTypes.concat(dict.peopIdTypes);
-  import {dict, getDictLable} from "../../assets/js/dict";
-  import {closeLoading, showloading} from "../../assets/js/common";
+  import {dict, getDictByType, getDictLable} from "../../assets/js/dict";
 
   export default {
     inject: ['reload'],
@@ -271,11 +268,11 @@
           }
         ],
         contractList: [],
-        IdTypedict: dicts,
-        contractStatusList: dict.contractStatus,
-        accountType: dict.accountType,
-        payTypeDict: dict.payType,
-        payMethodDict: dict.payMethod,
+        IdTypedict: getDictByType('compIdTypes').concat(getDictByType('peopIdTypes')),
+        contractStatusList: getDictByType('contractStatus'),
+        accountType: getDictByType('accountType'),
+        payTypeDict: getDictByType('payType'),
+        payMethodDict: getDictByType('payMethod'),
         signAccount: {
           contractCode:'',
           type: '0',
@@ -377,14 +374,14 @@
         this.$router.push("/contract");
       },
       onchangeAccountType(){
-         if(this.signAccount.type ==1){
-           this.signAccount.payType='';
-           this.signAccount.payMethod='';
-         }
+        if(this.signAccount.type ==1){
+          this.signAccount.payType='';
+          this.signAccount.payMethod='';
+        }
       },
       onchangePayType(){
         if(this.signAccount.payType =='01'){
-            this.signAccount.payMethod='';
+          this.signAccount.payMethod='';
         }
       }
     },

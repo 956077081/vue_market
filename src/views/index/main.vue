@@ -1,8 +1,8 @@
 <style scoped>
   .header_nav {
+    float: right;
     margin-right: 20px;
     position: relative;
-    float: right;
     display: flex;
   }
 
@@ -29,110 +29,184 @@
   }
 </style>
 <template>
-  <div class="layout">
-    <Layout>
-      <Header :style=" { height: '60px'}">
-        <Menu mode="horizontal" theme="dark" active-name="1">
-          <MenuItem name="company">
-            <p style="font-size: larger">{{this.company}}</p>
-          </MenuItem>
-          <div class="header_nav">
-            <MenuItem name="1" >
-              修改密码
+  <div>
+    <div class="layout">
+      <Layout>
+        <Header :style=" { height: '60px'}">
+          <Menu mode="horizontal" theme="dark">
+            <MenuItem name="company">
+              <p style="font-size: larger">{{this.company}}</p>
             </MenuItem>
-            <MenuItem name="2" style="padding: 0px">
-              <Icon type="md-person" style="  font-size: 25px;"></Icon>
-              {{this.$store.getters.userName}}
-            </MenuItem>
-            <MenuItem name="3" style="padding-right: 0px;padding-top: 0px;padding-bottom: 0px"  >
-              <span  @click="loginOut">退出</span>
-            </MenuItem>
-          </div>
-        </Menu>
-      </Header>
-      <Layout  :style="{
+            <div class="header_nav">
+              <MenuItem name="1" style="width:150px;font-size: medium;text-align: center">
+                <p size="large" @click="showUpdateWord">修改密码</p>
+              </MenuItem>
+              <MenuItem name="2" style="padding: 0px;font-size: medium">
+                <Icon type="md-person" style="  font-size: 25px;"></Icon>
+                {{this.$store.getters.userName}}
+              </MenuItem>
+              <MenuItem name="3" style="padding:0px;font-size: medium;width: 100px;text-align: center">
+                <span @click="loginOut">退出</span>
+              </MenuItem>
+            </div>
+          </Menu>
+        </Header>
+        <Layout :style="{
         width: '100%',
         position: 'fixed',
         top: '60px',
         left: '0px',
         bottom: '0px',
       }">
-        <Sider style=" overflow-x: hidden;">
-          <Menu :active-name="$route.path" theme="dark" width="auto" :open-names="activeMent"  @on-select="menuSelect">
-            <Submenu name="/">
-              <template slot="title">
-                首页
-              </template>
-              <MenuItem name="1-1" :to="'/'">
-                消息提醒
-              </MenuItem>
-            </Submenu>
-            <Submenu name="cust">
-              <template slot="title">
-                客户管理
-              </template>
-              <MenuItem name="/cust/custmanager" :to="'/cust/custmanager'">
-                客户管理查询
-              </MenuItem>
-            </Submenu>
-            <Submenu name="contract">
-              <template slot="title">
-                合同管理
-              </template>
-              <MenuItem name="/contract/contractManager" :to="'/contract/contractManager'">
-                合同查询管理
-              </MenuItem>
-            </Submenu>
-            <Submenu name="system">
-              <template slot="title">
-                系统管理管理
-              </template>
-              <MenuItem name="/system/employeeManager" :to="'/system/employeeManager'">
-                员工管理
-              </MenuItem>
-            </Submenu>
-          </Menu>
-        </Sider>
-        <Content style="padding: 10px ">
-          <contain ></contain>
-        </Content>
+          <Sider style=" overflow-x: hidden;">
+            <Menu :active-name="$route.path" theme="dark" width="auto" :open-names="activeMent" @on-select="menuSelect">
+              <Submenu v-for="menu in menutList"  :key="menu.url"  :name="menu.url">
+                <template slot="title">
+                  {{menu.name}}
+                </template>
+                <template  v-if="menu.sub != null && menu.sub.length >0">
+                  <MenuItem v-for="subitem in menu.sub" :key="subitem.url" :name="subitem.url" :to="subitem.url" >
+                      {{subitem.name}}
+                  </MenuItem>
+                </template>
+              </Submenu>
+            </Menu>
+          </Sider>
+          <Content style="padding: 10px ">
+            <contain></contain>
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </div>
+    <div>
+      <Modal  v-model="isupdatePassword"  :closable="false"  footer-hide		>
+          <template slot="header">
+           <p style="font-size: large"> 修改密码</p>
+          </template>
+          <Form :label-width="100" style="font-size: large">
+            <FormItem  >
+              <template slot="label">
+               <require-element name="新密码"></require-element>
+              </template>
+              <Input type="password" v-model="newpassword" placeholder="新密码"></Input>
+            </FormItem>
+            <FormItem  >
+              <template slot="label">
+                <require-element name="再次输入"></require-element>
+              </template>
+              <Input type="password" v-model="againpassword" placeholder="再次输入新密码" @keyup.native="validPassword()"></Input>
+            </FormItem>
+            <FormItem label="">
+              <p style="color: red;font-size: medium" >{{userpassWord.errmsg}}</p>
+            </FormItem>
+            <div style="text-align: center">
+              <Button size="large" @click="savePassword">确定</Button>
+              <Button size="large" @click="canclePassword">取消</Button>
+            </div>
+          </Form>
+        <div slot="footer"></div>
+      </Modal>
+    </div>
   </div>
 </template>
 
 <script>
-  import {STATIC_CONFIG} from "../../assets/js/config";
   import custManager from "../cust/custManager";
   import custDetails from "../cust/custDetails";
   import Contain from "./contain";
   import {getCompInfo} from "../../assets/js/project";
+  import RequireElement from "../../components/common/requireElement";
 
   export default {
     components: {
+      RequireElement,
       Contain,
       custManager, custDetails
     },
     name: "mainContent",
     data() {
       return {
-        company: STATIC_CONFIG.company,
+        isupdatePassword: false,
+        company: getCompInfo().compName,
         userlog: require("../../assets/pic/user.png"),
         curContain: '',
+        newpassword:'',
+        againpassword:'',
+        userpassWord:{
+          errmsg:''
+        },
+        menutList:this.$store.getters.menus
       }
     },
     methods: {
+      menuAuth(parentUrl,childurl){
+        console.log(parentUrl,childurl)
+        let  length = this.menutList.length;
+          for(let i=0;i<length ;i++){
+            if(this.menutList[i].url ==parentUrl && this.menutList[i].url==childurl){
+              return  true;
+            }
+          }
+        return false;
+      },
+      savePassword(){
+            if(this.newpassword ==null || this.newpassword.trim() ==''){
+                this.userpassWord.errmsg ="新密码不能为空"
+               return ;
+             }
+            if(this.newpassword != this.againpassword){
+              this.userpassWord.errmsg= "密码不一致，请重新输入！";
+              return ;
+            }
+            if(this.newpassword.trim().length <8){
+              this.userpassWord.errmsg= "密码长度不得小于8位";
+              return;
+            }
+            let param ={
+              code:this.$store.getters.userCode,
+              passWord: this.newpassword.trim()
+            }
+            this.$postMgr("/user/updateWord",param).then(res=>{
+              this.$Message.success({
+                content:'密码修改成功！',
+                background:true,
+                duration:3
+              })
+            }).catch(err=>{
+              this.$Message.error({
+                content:'修改异常，请重新操作！',
+                background:true,
+                duration:3
+              })
+            })
+           //  初始化清除
+        this.isupdatePassword= false;
+        this.newpassword ="";
+         this.againpassword ="";
+      },
+      canclePassword(){
+        this.isupdatePassword =false;
+        this.newpassword ="";
+        this.againpassword="";
+      },
+      showUpdateWord(){
+        this.isupdatePassword =true;
+      },
       menuSelect: function (name) {
-        // // this.$router.push("/cust");
-        // this.curContain =name;
       },
       loginOut() {
         this.$store.dispatch('loginOut');
         this.$router.push({path: "/login", query: {compCode: getCompInfo().compCode}});
+      },
+      validPassword(){
+        if(this.newpassword != this.againpassword){
+          this.userpassWord.errmsg= "密码不一致，请重新输入！"
+        }else{
+          this.userpassWord.errmsg="";
+        }
       }
     },
     created() {
-      console.log(this.$router.options.routes)
     },
     computed: {
       activeMent() {

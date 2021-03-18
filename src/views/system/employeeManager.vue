@@ -25,7 +25,7 @@
           </Col>
           <Col span="4">
             <div>
-              <Select v-model="param.roleType">
+              <Select v-model="param.roleType" clearable>
                 <Option value="">请选择</Option>
                 <Option v-for=" role in roleTypeDict" :value="role.value" :key="role.value"> {{role.label}}</Option>
               </Select>
@@ -38,8 +38,7 @@
           </Col>
           <Col span="4">
             <div>
-              <Select  v-model="param.status">
-                  <Option value="">请选择</Option>
+              <Select  v-model="param.status" clearable>
                 <Option v-for="empstatus in empStatusDict" :key="empstatus.value" :value="empstatus.value">{{empstatus.label}}</Option>
               </Select>
             </div>

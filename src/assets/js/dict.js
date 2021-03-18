@@ -1,12 +1,13 @@
-export const dict = {
+import store from "../../store";
+ const dicts11 = {
   compIdTypes: [
     {label: '营业执照', value: '11'},
     {label: '组织结构代码', value: '12'},
-    {label: '社会信用代码', value: '13'}
+    {label: '社会信用代码', value: '13'},
   ],
   peopIdTypes: [
     {label: '身份证', value: '01'},
-    {label: '护照', value: '02'}
+    {label: '护照', value: '02'},
   ],
   custTypeDict: [
     {label: '个人', value: '00'},
@@ -36,7 +37,7 @@ export const dict = {
     {label: '扣款', value: '1' }
   ],
 
-  validStatus:[
+    validStatus:[
     {label: '无效', value: '0'},
     {label: '有效', value: '1' }
   ],
@@ -46,20 +47,22 @@ export const dict = {
     {label: '普通员工', value: 'emp' }
   ],
 }
-
+export const dict=store.getters.dictlist;
 export function getDictLable(type, value) {
-  if (dict[type] != null) {
-    for (let i = 0; i < dict[type].length; i++) {
-      if (dict[type][i].value == value) {
-        return dict[type][i].label;
+  let dictlist =store.getters.dictlist;
+  if (dictlist[type] != null ) {
+    for (let i = 0; i < dictlist[type].length; i++) {
+      if (dictlist[type][i].value == value) {
+        return dictlist[type][i].label;
       }
     }
   }
 }
 
 export function getDictByType(type) {
-  if (dict[type] == null) {
+  let dictlist =store.getters.dictlist;
+  if (dictlist[type] == null|| dictlist[type] == undefined) {
     return [];
   }
-  return dict[type];
+  return dictlist[type];
 }
