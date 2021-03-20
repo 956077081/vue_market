@@ -14,6 +14,7 @@
     margin-top: 5px;
   }
 
+
   .foot_page {
     position: relative;
     top: 30px;
@@ -31,9 +32,10 @@
               <span slot="label"><require-element name="客户名称"></require-element></span>
               <div style="display: flex">
                 <Input v-model="customer.custName" :disabled="true"></Input>
-                <Button v-if="operate !='update'" style="margin-left: 20px" size="small" @click="displayCustView">选择客户</Button>
+                <Button v-if="operate !='update'" style="margin-left: 20px" size="small" @click="displayCustView">选择客户
+                </Button>
               </div>
-              <Modal v-model="displayCustPage" width="1000" title="请选择客户" @on-ok="retCust" @on-cancel="cancleCust">
+              <Modal v-model="displayCustPage" width="1000"    title="请选择客户" @on-ok="retCust" @on-cancel="cancleCust">
                 <div class="cust_head">
                   <Row class="cust_head_consule">
                     <Col span="2" class="consule_label">
@@ -76,7 +78,7 @@
                     </Col>
                   </Row>
                 </div>
-                <Table :columns="custColumns" :data="custList" highlight-row :max-height="400" style="top: 10px;"
+                <Table :columns="custColumns" :data="custList" highlight-row :max-height="300" style="top: 10px;"
                        @on-row-click="selectCust"></Table>
                 <Page :current="custParam.currPage" :page-size="custParam.pageSize" @on-change="changePage"
                       @on-page-size-change="changePageSize" class="foot_page" :total="custParam.count" size="small"
@@ -118,9 +120,11 @@
           <Col span="8">
             <FormItem>
               <span slot="label"><require-element name="金额"></require-element></span>
-              <InputNumber style="width: auto" :min="0" :max="999999999" :disabled="operate == 'update'"
-                           v-model="contractDetails.totalMoney"
-                           @keyup.native="filterMoney" ></InputNumber>&nbsp;元
+              <div style="display: flex">
+                <InputNumber :min="0" :max="999999999"
+                             v-model="contractDetails.totalMoney"
+                             @keyup.native="filterMoney"></InputNumber>&nbsp;元
+              </div>
             </FormItem>
           </Col>
           <Col span="8">
@@ -132,9 +136,10 @@
           <Col span="8">
             <FormItem>
               <span slot="label">期限</span>
-              <Input style="width: auto" v-model="contractDetails.term" @keyup.native="filterTerm"></Input>
-              &nbsp;
-              月
+              <div class="nowrap">
+                <Input style="width: auto" v-model="contractDetails.term" @keyup.native="filterTerm"></Input>
+                &nbsp; 月
+              </div>
             </FormItem>
           </Col>
           <Col span="8">
@@ -143,7 +148,7 @@
               <DatePicker type="date" style="width: 200px" v-model="contractDetails.endTime"></DatePicker>
             </FormItem>
           </Col>
-<!--          修改页面不显示打款详情-->
+          <!--          修改页面不显示打款详情-->
           <template v-if="operate != 'update'">
             <Divider orientation="left"><p style="font-size: small"> 打款账户详情</p></Divider>
             <Col span="8">
@@ -172,12 +177,14 @@
               </FormItem>
             </Col>
             <Col span="8">
-              <FormItem>
-                <span slot="label">打款金额</span>
-                <InputNumber style="width: auto" :min="0" :max="999999999" :disabled="operate == 'update'"
-                             v-model="account.payMoney"
-                             @keyup.native="filterMoney(account.payMoney)" ></InputNumber>&nbsp;元
-              </FormItem>
+                <FormItem label="打款金额">
+                  <div   style="display: flex">
+                   <InputNumber style="width: auto" :min="0" :max="999999999"
+                               v-model="account.payMoney"
+                               @keyup.native="filterMoney(account.payMoney)"></InputNumber>&nbsp;元
+                  </div>
+
+                </FormItem>
             </Col>
           </template>
         </Row>
@@ -209,7 +216,7 @@
           contractName: '',
           startTime: null,
           endTime: null,
-          totalMoney:0,
+          totalMoney: 0,
           term: 0,
           managerCode: '',
           operatorCode: '',
@@ -388,7 +395,7 @@
         this.customer.code = '';
       },
       save() {
-        if (this.validate()&&this.validateAccount()) {
+        if (this.validate() && this.validateAccount()) {
           let param = {
             'contractdetails': this.contractDetails,
             'account': this.account,
@@ -403,7 +410,7 @@
           }).catch(err => {
             this.$Message.error({
               background: true,
-              content: '保存合同失败,'+err.data.mess
+              content: '保存合同失败,' + err.data.mess
             });
           })
         }
@@ -412,7 +419,7 @@
         this.$postMgr("/contract/get/" + this.code).then(res => {
           this.contractDetails = res.data.contractdetails;
           this.customer = res.data.customer;
-          this.account.payMoney =this.contractDetails.totalMoney;
+          this.account.payMoney = this.contractDetails.totalMoney;
         }).catch(err => {
           this.$Message.error({
             background: true,
@@ -468,23 +475,23 @@
         }
         return true;
       },
-      validateAccount(){
-          if(this.account.payType == ""){
-            this.$Message.error({
-              background: true,
-              content: '打款必填字段不能为空！'
-            })
-            return false;
-          }
-          return true;
+      validateAccount() {
+        if (this.account.payType == "") {
+          this.$Message.error({
+            background: true,
+            content: '打款必填字段不能为空！'
+          })
+          return false;
+        }
+        return true;
       },
       update() {
-        if(!this.validate()){
+        if (!this.validate()) {
           return;
         }
-        this.$postMgr("/contract/update",{'contractdetails':this.contractDetails}).then(res=>{
-            this.$router.push("/contract")
-        }).catch(err=>{
+        this.$postMgr("/contract/update", {'contractdetails': this.contractDetails}).then(res => {
+          this.$router.push("/contract")
+        }).catch(err => {
           this.$Message.error({
             background: true,
             content: '合同修改保存失败！'

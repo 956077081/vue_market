@@ -282,6 +282,3 @@
 
 </script>
 
-<style scoped>
-
-</style>

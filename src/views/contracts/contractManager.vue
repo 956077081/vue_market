@@ -333,12 +333,12 @@
         this.$router.push({path: '/contract/contractDetails', query: {operate: 'update', code: code}});
       },
       deleteContract(code) {
-        this.$postMgr("/contract/delete", {code: code}).then(res => {
+        this.$postMgr("/contract/delete", {code: code},'get').then(res => {
+          this.search();
           this.$Message.success({
             background: true,
             content: '合同置失效成功！'
           });
-          this.search();
         }).catch(err => {
           this.$Message.error({
             background: true,
