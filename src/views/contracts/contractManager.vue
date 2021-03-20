@@ -89,16 +89,16 @@
           <Col span="4">
             <div>
               <DatePicker type="date" placeholder="开始时间" v-model="param.startEndTime"></DatePicker>
-              ~
+
             </div>
           </Col>
           <Col span="8">
             <div>
-              <DatePicker type="date" placeholder="结束时间" v-model="param.endEndTime"></DatePicker>
+              &nbsp;~&nbsp;<DatePicker type="date" placeholder="结束时间" v-model="param.endEndTime"></DatePicker>
             </div>
           </Col>
         </Row>
-        <Row style="padding-top: 20px">
+        <Row style="padding-top: 10px">
           <div>
             <Col span="2" style="display: flex;">
               <Button @click="search">查询</Button>&nbsp;&nbsp;

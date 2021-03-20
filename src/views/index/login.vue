@@ -9,16 +9,16 @@
     >
       <Col span="25">
         <Card shadow style="width: 400px;background-color: rgba(0, 0, 0,0.1);text-align: center">
-          <p slot="title">{{company}}</p>
+          <p slot="title" >{{company}}</p>
           <Form>
-            <FormItem label="" label-position="top">
+            <FormItem  >
               <Input type="text" placeholder="请输入账号" size="large" v-model="username"></Input>
             </FormItem>
-            <FormItem label="" label-position="top">
+            <FormItem  >
               <Input type="password" placeholder="请输入密码" size="large" v-model="password"></Input>
             </FormItem>
-            <FormItem label="" label-position="top">
-              <Button type="primary" long size="large" @click.native.prevent="handleLogin()">登陆</Button>
+            <FormItem>
+              <Button type="primary" long  size="large" @click.native.prevent="handleLogin()">登陆</Button>
             </FormItem>
             <div class="error">
               <span v-if="error">

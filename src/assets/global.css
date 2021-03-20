@@ -1,5 +1,4 @@
 .page_main {
-  margin-top: 20px;
   position: relative;
 }
 .page_main_title{
@@ -15,3 +14,80 @@
   margin-top: 10px;
   margin-right: 30px;
 }
+.ivu-table-cell {
+  font-size: small;
+}
+
+/**************覆盖iview的一些样式****************/
+/*.v-transfer-dom{*/
+/*  padding:0px !important;*/
+/*}*/
+/*.ivu-cell-title{*/
+/*  font-weight: bold;*/
+/*}*/
+/*.ivu-drawer-body{*/
+/*  padding:12px;*/
+/*}*/
+/*.ivu-layout-header{*/
+/*  background: rgb(43, 52, 61);*/
+/*}*/
+/*.ivu-layout-sider{*/
+/*  background: rgb(43, 52, 61);*/
+/*}*/
+/*.ivu-layout{*/
+/*  background-color: #ffffff;*/
+/*}*/
+/*.ivu-tabs-bar {*/
+/*  margin-bottom: 8px;*/
+/*}*/
+/*.ivu-tabs-content{*/
+/*  margin:4px 8px;*/
+/*  !* border-bottom: 1px #dcdee2 solid;*/
+/*  border-left: 1px #dcdee2 solid;*/
+/*  border-right: 1px #dcdee2 solid; *!*/
+/*}*/
+/*.ivu-table-tip {*/
+/*  overflow-x: hidden;*/
+/*}*/
+/*.ivu-col{*/
+/*  margin-top:5px !important;*/
+/*}*/
+/*.ivu-form-item{*/
+/*  margin-bottom: 5px;*/
+/*}*/
+/*.ivu-card-body {*/
+/*  padding: 10px;*/
+/*}*/
+/*.ivu-upload-list{*/
+/*  margin-top: 0;*/
+/*}*/
+/*.ivu-card-head {*/
+/*  background-color: #f5f5f7;*/
+/*  padding: 5px 8px;*/
+/*}*/
+/*.ivu-card-extra{*/
+/*  top:6px;*/
+/*}*/
+/*.ivu-page-options-elevator input{*/
+/*  text-align: center;*/
+/*}*/
+/*.ivu-table-cell{*/
+/*  padding-left: 8px;*/
+/*  padding-right: 8px;*/
+/*}*/
+/*.ivu-table-wrapper{*/
+/*  !* position: inherit !important; *!*/
+/*  overflow: visible;*/
+/*}*/
+/*.ivu-modal-footer{*/
+/*  border-top: none;*/
+/*}*/
+/*!* 弹出提示框修改 *!*/
+/*.ivu-message-notice-content{*/
+/*  background: #000000 !important;*/
+/*  opacity: 0.7 !important;*/
+/*  color: #ffffff !important;*/
+/*  max-width: 500px;*/
+/*  padding: 10px 20px;*/
+/*  word-break: break-all;*/
+/*}*/

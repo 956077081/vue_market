@@ -159,6 +159,7 @@
     data() {
       return {
         operate: 'create',
+        getTitleName:'',
         customer: {
           operatorCode: this.$store.getters.userCode,
           operatorName: this.$store.getters.userName,
@@ -189,24 +190,22 @@
         }
       }
     },
-    computed: {
-      getTitleName: function () {
-        if (this.operate == 'create') {
-          return '新增客户';
-        } else if (this.operate == 'update') {
-          this.display.cust4info.disabled = true;
-          this.queryCust();
-          return '修改客户';
-        }
+    created() {
+      this.operate = this.$route.query.operate;
+      if (this.operate == 'create') {
+        this.getTitleName= '新增客户';
+      } else if (this.operate == 'update') {
+        this.display.cust4info.disabled = true;
+        this.queryCust();
+        this.getTitleName= '修改客户';
+      }else{
         this.$router.push("/cust");
         this.$Message.error({
           background: true,
           content: '页面发生错误！'
         })
       }
-    },
-    created() {
-      this.operate = this.$route.query.operate;
+
     },
     methods: {
       initAge() {

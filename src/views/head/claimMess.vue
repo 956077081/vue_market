@@ -1,12 +1,9 @@
 <style scoped>
   .tableCss /deep/ .ivu-table-cell{
-   padding-right: 4px;
+     padding-right: 4px;
     padding-left: 5px;
     width: 100%;
-  }
-  .ivu-table-cell {
-    padding-left: 8px;
-    padding-right: 8px;
+
   }
 </style>
 <template>

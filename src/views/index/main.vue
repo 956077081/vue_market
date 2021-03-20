@@ -27,25 +27,29 @@
     left: 0px;
     right: 0px;
   }
+  .main_head {
+    height: 60px
+  }
+
 </style>
 <template>
   <div>
     <div class="layout">
       <Layout>
-        <Header :style=" { height: '60px'}">
+        <Header class="main_head">
           <Menu mode="horizontal" theme="dark">
             <MenuItem name="company">
-              <p style="font-size: larger">{{this.company}}</p>
+              <p >{{this.company}}</p>
             </MenuItem>
             <div class="header_nav">
-              <MenuItem name="1" style="width:150px;font-size: medium;text-align: center">
+              <MenuItem name="1" style="width:150px;text-align: center">
                 <p size="large" @click="showUpdateWord">修改密码</p>
               </MenuItem>
-              <MenuItem name="2" style="padding: 0px;font-size: medium">
-                <Icon type="md-person" style="  font-size: 25px;"></Icon>
+              <MenuItem name="2" style="padding: 0px;">
+                <Icon type="md-person" ></Icon>
                 {{this.$store.getters.userName}}
               </MenuItem>
-              <MenuItem name="3" style="padding:0px;font-size: medium;width: 100px;text-align: center">
+              <MenuItem name="3" style="padding:0px;width: 100px;text-align: center">
                 <span @click="loginOut">退出</span>
               </MenuItem>
             </div>
@@ -58,7 +62,7 @@
         left: '0px',
         bottom: '0px',
       }">
-          <Sider style=" overflow-x: hidden;">
+          <Sider style="width: 200px; overflow-x: hidden;">
             <Menu :active-name="$route.path" theme="dark" width="auto" :open-names="activeMent" @on-select="menuSelect">
               <Submenu v-for="menu in menutList"  :key="menu.url"  :name="menu.url">
                 <template slot="title">
@@ -72,7 +76,7 @@
               </Submenu>
             </Menu>
           </Sider>
-          <Content style="padding: 10px ">
+          <Content style="padding: 10px " :style="{'font-size':'small'}">
             <contain></contain>
           </Content>
         </Layout>
@@ -81,7 +85,7 @@
     <div>
       <Modal  v-model="isupdatePassword"  :closable="false"  footer-hide		>
           <template slot="header">
-           <p style="font-size: large"> 修改密码</p>
+           <p style="font-size: medium"> 修改密码</p>
           </template>
           <Form :label-width="100" style="font-size: large">
             <FormItem  >
