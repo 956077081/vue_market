@@ -3,7 +3,9 @@
      padding-right: 4px;
     padding-left: 5px;
     width: 100%;
-
+  }
+  .page_main /deep/ .ivu-card-head p{
+    font-size: 14px;
   }
 </style>
 <template>
@@ -91,7 +93,7 @@
           },
           {
             key: 'endTime',
-            title: '合同创建时间',
+            title: '合同结束时间',
             slot: 'endTime'
           },
           {

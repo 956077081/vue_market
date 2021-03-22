@@ -121,7 +121,7 @@
             <FormItem>
               <span slot="label"><require-element name="金额"></require-element></span>
               <div style="display: flex">
-                <InputNumber :min="0" :max="999999999"
+                <InputNumber  style="width: auto"  :min="0" :max="999999999"
                              v-model="contractDetails.totalMoney"
                              @keyup.native="filterMoney"></InputNumber>&nbsp;元
               </div>

@@ -56,8 +56,7 @@
 
           <Col span="4">
             <div>
-              <Select v-model="param.status">
-                <Option value="">请选择</Option>
+              <Select v-model="param.status" clearable>
                 <Option v-for="contractStatus  in contractStatusList" :key="contractStatus.value"
                         :value="contractStatus.value">{{contractStatus.label}}
                 </Option>
@@ -126,7 +125,7 @@
           <Button  size="small" @click="viewContractDetails(row.code)">查看详情</Button>
           <Button v-if="row.status =='01'"  size="small" @click="updateContract(row.code)">修改</Button>
           <Button v-if="row.status =='01'" size="small" @click="deleteContract(row.code)">失效</Button>
-          <Button v-if="row.status =='01'" @click="continueContract(row)">打款</Button>
+          <Button v-if="row.status =='01'"  size="small" @click="continueContract(row)">打款</Button>
         </template>
       </Table>
     </div>
@@ -199,7 +198,7 @@
           custName: '',
           idType: '',
           idNum: '',
-          status,
+          status:'01',
           startEndTime: null,
           endEndTime: null,
           operatorName: '',
@@ -225,16 +224,16 @@
             key: 'custName'
           },
           {
-            title: '客户证件类型',
+            title: '证件类型',
             key: 'idType',
             slot: 'idType'
           },
           {
-            title: '客户证件号码',
+            title: '证件号码',
             key: 'idNum'
           },
           {
-            title: '金额',
+            title: '合同金额',
             key: 'totalMoney'
           },
           {
@@ -262,6 +261,7 @@
             key: 'operatorName'
           },
           {
+            width: 150,
             title: '操作',
             key: 'operate',
             slot: 'operate'

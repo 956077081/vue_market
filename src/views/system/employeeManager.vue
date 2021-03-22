@@ -26,7 +26,6 @@
           <Col span="4">
             <div>
               <Select v-model="param.roleType" clearable>
-                <Option value="">请选择</Option>
                 <Option v-for=" role in roleTypeDict" :value="role.value" :key="role.value"> {{role.label}}</Option>
               </Select>
             </div>

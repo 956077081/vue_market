@@ -4,7 +4,9 @@
     padding-top: 20px;
     font-size: medium;
   }
-
+.smsmodal  .ivu-form-item{
+  margin-bottom: 6px;
+}
 </style>
 <template>
   <div>
@@ -94,9 +96,31 @@
           @on-page-size-change="changePageSize" class="head_page" :total="param.count" size="small" show-elevator
           show-sizer/>
 
-    <Modal v-model="isSendSms" title="发送短信" width="500" @on-ok="send" @on-cancel="closeSend">
-      <Form>
-        <FormItem label="">功能即将上线敬请稍等</FormItem>
+    <Modal class="smsmodal" v-model="isSendSms" title="发送短信" width="500" :closable="false"  @on-cancel="clearSms" footer-hide>
+      <Form :label-width="100">
+        <FormItem >
+          <div slot="label" >短信模板
+            <Button size="small" style="margin-top: 5px" @click="getcheckSmsContent">检验</Button></div>
+          <div>
+            <Input type="textarea" :autosize="{minRows: 2, maxRows: 6}" v-model="smsParam.template" />
+            <Button size="small" @click="addSmsContent('(#{custname})')">姓名</Button>
+            <Button size="small" @click="addSmsContent('(#{phone})')">联系方式</Button>
+            <Button size="small" @click="addSmsContent('(#{random})')">营销随机码</Button>
+          </div>
+        </FormItem>
+        <FormItem >
+          <div slot="label">短信内容</div>
+          <Input readonly type="textarea" v-model="smsParam.content"  placeholder="点击校验生成短信内容" />
+        </FormItem>
+        <FormItem label="手机号">
+          <Input  v-model="smsParam.phone"></Input>
+        </FormItem>
+        <FormItem label="" >
+          <div style="text-align: center">
+            <Button>发送</Button>
+            <Button @click="clearSms">取消</Button>
+          </div>
+        </FormItem>
       </Form>
     </Modal>
   </div>
@@ -173,6 +197,13 @@
 
         ],
         idTypeDict:getDictByType('compIdTypes').concat(getDictByType('peopIdTypes')),
+        smsParam:{
+              template:'',
+              content:'',
+              phone: '',
+              content:''
+        },
+        smsContentSet:new Set(),
         param: {
           custName: '',
           idType: '',
@@ -209,6 +240,32 @@
       }
     },
     methods: {
+      getcheckSmsContent(){
+        let  cust=   this.$refs.custList.getSelection()[0];
+        if( this.smsContentSet !=null){
+          this.smsContentSet.forEach(item=>{
+            if(this.smsParam.template.has(item)){
+            }
+          })
+        }
+
+      },
+      addSmsContent(content){
+        if(this.smsParam.template == null){
+          this.smsParam.template="";
+        }
+        console.log(this.smsContentSet,this.smsParam);
+        this.smsContentSet.add(content);
+        this.smsParam.template = this.smsParam.template+content;
+        console.log( this.smsParam.template)
+      },
+      clearSms(){
+        this.smsContentSet.clear();
+        for (let key in  this.smsParam) {
+          this.smsParam[key] = ''
+        }
+        this.isSendSms =false;
+      },
       getIdTypeLable(value){
         if(value == undefined || value == null ){
           return '' ;
@@ -225,17 +282,18 @@
       },
       sendMsg(){
        let  custs=   this.$refs.custList.getSelection();
+       if(custs.length==0){
+         this.$Message.info({
+           content:'请选择需要发送短信的客户',
+           background: true,
+           duration:3,
+         })
+       }
        if(custs.length ==1 ){//单人发送
           this.isSendSms =true;
        }else if (custs.length>1){//多人发送
          this.isSendSms =true;
        }
-      },
-      send(){//发送短信
-
-      },
-      closeSend(){//取消发送
-
       },
       search() {
         this.$postMgr('/customer/list', this.param,'get').then(res => {
