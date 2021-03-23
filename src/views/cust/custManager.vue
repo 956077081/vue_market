@@ -103,9 +103,9 @@
             <Button size="small" style="margin-top: 5px" @click="getcheckSmsContent">检验</Button></div>
           <div>
             <Input type="textarea" :autosize="{minRows: 2, maxRows: 6}" v-model="smsParam.template" />
-            <Button size="small" @click="addSmsContent('(#{custname})')">姓名</Button>
-            <Button size="small" @click="addSmsContent('(#{phone})')">联系方式</Button>
-            <Button size="small" @click="addSmsContent('(#{random})')">营销随机码</Button>
+            <Button size="small" @click="addSmsContent('${custName}')">姓名</Button>
+            <Button size="small" @click="addSmsContent('${phone}')">联系方式</Button>
+            <Button size="small" @click="addSmsContent('${random}')">营销随机码</Button>
           </div>
         </FormItem>
         <FormItem >
@@ -240,15 +240,23 @@
       }
     },
     methods: {
-      getcheckSmsContent(){
-        let  cust=   this.$refs.custList.getSelection()[0];
+      getcheckSmsContent(){//getTemContent
+        let  cust=   this.$refs.custList.getSelection();
+        let content ="";
         if( this.smsContentSet !=null){
-          this.smsContentSet.forEach(item=>{
-            if(this.smsParam.template.has(item)){
-            }
+          console.log({...this.smsParam,...{"params":cust}});
+          this.$postMgr("/sms/getTemContent",{...this.smsParam,...{"params":cust}}).then(res=>{
+            this.smsParam.content=res.data;
+          }).catch(err=>{
+            this.$Message.error({
+              content:"生成模板内容失败"+err.data.mess,
+              background: true,
+              duration:3,
+            });
           })
+        }else{
+          this.smsParam.content  ="";
         }
-
       },
       addSmsContent(content){
         if(this.smsParam.template == null){

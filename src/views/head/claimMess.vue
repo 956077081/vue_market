@@ -26,7 +26,7 @@
           </Card>
         </Col>
         <Col span="12">
-          <Card title="合同到期提醒">
+          <Card title="合同即将到期提醒">
             <Table class="tableCss" :max-height="tableHeight" :columns="overContractColumn" :data="overContracts">
               <template slot-scope="{ row, index }" slot="endTime">
                 {{ formatTime(row.endTime)}}

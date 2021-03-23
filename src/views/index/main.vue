@@ -76,7 +76,8 @@
               </Submenu>
             </Menu>
           </Sider>
-          <Content style="padding: 10px " :style="{'font-size':'small'}">
+<!--          style="padding: 10px; "-->
+          <Content :style="{'font-size':'small'}">
             <contain></contain>
           </Content>
         </Layout>

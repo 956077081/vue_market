@@ -11,6 +11,7 @@ import contractDetails from "../views/contracts/contractDetails";
 import contractView from "../views/contracts/contractView";
 import error from "../views/index/error";
 import employeeManager from "../views/system/employeeManager";
+import reportForms from "../views/head/reportForms";
 
 Vue.use(VueRouter)
 
@@ -34,7 +35,13 @@ const routers = [
       path: '/claimMess',
       name: 'claimMess',
       component: () => import('@/views/head/claimMess'),
-    }]
+      },
+      {
+        path: '/reportForms',
+        name: 'reportForms',
+        component: reportForms
+      }
+    ]
   },
   {
     path: '/cust',
@@ -57,7 +64,7 @@ const routers = [
         component: custView
       }
     ]
-  },{
+  }, {
     path: "/contract",
     name: 'contract',
     component: main,
