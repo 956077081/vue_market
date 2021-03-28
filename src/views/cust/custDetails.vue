@@ -240,13 +240,13 @@
             background: true,
             content: '创建客户成功！'
           });
-          this.$router.push('/cust/custmanager')
         }).catch(res => {
           this.$Message.error({
             background: true,
             content: '创建客户失败！'
           });
         })
+        this.$router.push('/cust/custmanager')
       },
       update() {
         postMgr('/customer/update/' + this.$route.query.code, this.customer).then(res => {

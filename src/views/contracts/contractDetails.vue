@@ -31,60 +31,11 @@
             <FormItem>
               <span slot="label"><require-element name="客户名称"></require-element></span>
               <div style="display: flex">
-                <Input v-model="customer.custName" :disabled="true"></Input>
+                <Input v-model="customer.custName" :readonly="true"></Input>
                 <Button v-if="operate !='update'" style="margin-left: 20px" size="small" @click="displayCustView">选择客户
                 </Button>
               </div>
-              <Modal v-model="displayCustPage" width="1000"    title="请选择客户" @on-ok="retCust" @on-cancel="cancleCust">
-                <div class="cust_head">
-                  <Row class="cust_head_consule">
-                    <Col span="2" class="consule_label">
-                      <span>客户类型</span>
-                    </Col>
-                    <Col span="4">
-                      <Select v-model="custParam.custType" @on-change="changeCustType2">
-                        <Option v-for=" cust in custTypes" :key="cust.value" :value="cust.value"> {{cust.label}}
-                        </Option>
-                      </Select>
-                    </Col>
-                    <Col span="2" class="consule_label">
-                      <span>客户名称</span>
-                    </Col>
-                    <Col span="4">
-                      <Input v-model="custParam.custName"></Input>
-                    </Col>
-                    <Col span="2" class="consule_label">
-                      <span> 证件类型</span>
-                    </Col>
-                    <Col span="4">
-                      <Select v-model="custParam.idType">
-                        <Option v-for=" idType in getIdTypeDict2" :key="idType.value" :value="idType.value">
-                          {{idType.label}}
-                        </Option>
-                      </Select>
-                    </Col>
-                  </Row>
-                  <Row class="cust_head_consule">
-                    <Col span="2" class="consule_label">
-                      <span>证件号码</span>
-                    </Col>
-                    <Col span="4">
-                      <Input></Input>
-                    </Col>
-                  </Row>
-                  <Row style="top: 5px">
-                    <Col span="24">
-                      <Button @click="searchCust">查询</Button>
-                    </Col>
-                  </Row>
-                </div>
-                <Table :columns="custColumns" :data="custList" highlight-row :max-height="300" style="top: 10px;"
-                       @on-row-click="selectCust"></Table>
-                <Page :current="custParam.currPage" :page-size="custParam.pageSize" @on-change="changePage"
-                      @on-page-size-change="changePageSize" class="foot_page" :total="custParam.count" size="small"
-                      show-elevator
-                      show-sizer/>
-              </Modal>
+
             </FormItem>
           </Col>
           <Col span="8">
@@ -107,7 +58,7 @@
           <Col span="8">
             <FormItem>
               <span slot="label"><require-element name="证件号码"></require-element></span>
-              <Input v-model="customer.idNum" :disabled="true"></Input>
+              <Input v-model="customer.idNum" :readonly="true"></Input>
             </FormItem>
           </Col>
           <Divider orientation="left"><p style="font-size: small"> 合同详情</p></Divider>
@@ -197,6 +148,56 @@
         </Row>
       </Form>
     </div>
+    <Modal v-model="displayCustPage" width="1000"    title="请选择客户" @on-ok="retCust" @on-cancel="cancleCust">
+      <div class="cust_head">
+        <Row class="cust_head_consule">
+          <Col span="2" class="consule_label">
+            <span>客户类型</span>
+          </Col>
+          <Col span="4">
+            <Select v-model="custParam.custType" @on-change="changeCustType2" clearable>
+              <Option v-for=" cust in custTypes" :key="cust.value" :value="cust.value"> {{cust.label}}
+              </Option>
+            </Select>
+          </Col>
+          <Col span="2" class="consule_label">
+            <span>客户名称</span>
+          </Col>
+          <Col span="4">
+            <Input v-model="custParam.custName"></Input>
+          </Col>
+          <Col span="2" class="consule_label">
+            <span> 证件类型</span>
+          </Col>
+          <Col span="4">
+            <Select v-model="custParam.idType" clearable>
+              <Option v-for=" idType in getIdTypeDict2" :key="idType.value" :value="idType.value">
+                {{idType.label}}
+              </Option>
+            </Select>
+          </Col>
+        </Row>
+        <Row class="cust_head_consule">
+          <Col span="2" class="consule_label">
+            <span>证件号码</span>
+          </Col>
+          <Col span="4">
+            <Input v-model="custParam.idNum"></Input>
+          </Col>
+        </Row>
+        <Row style="top: 5px">
+          <Col span="24">
+            <Button @click="searchCust">查询</Button>
+          </Col>
+        </Row>
+      </div>
+      <Table :columns="custColumns" :data="custList" highlight-row :max-height="300" style="top: 10px;"
+             @on-row-click="selectCust"></Table>
+      <Page :current="custParam.currPage" :page-size="custParam.pageSize" @on-change="changePage"
+            @on-page-size-change="changePageSize" class="foot_page" :total="custParam.count" size="small"
+            show-elevator
+            show-sizer/>
+    </Modal>
   </div>
 </template>
 
@@ -214,7 +215,7 @@
         contractDetails: {
           code: '',
           contractName: '',
-          startTime: null,
+          startTime: new Date(),
           endTime: null,
           totalMoney: 0,
           term: 0,
@@ -246,6 +247,14 @@
           currPage: 1,
           pageSize: 10,
           total: 0
+        },
+        custQueryValue:{
+          code: '',
+          custCode: '',
+          custName: '',
+          custType: '',
+          idType: '',
+          idNum: ''
         },
         custColumns: [
           {
@@ -364,7 +373,7 @@
           this.contractDetails.term = Number(this.contractDetails.term).toFixed(0);
           if (this.contractDetails.term != 0) {
             let date = new Date();
-            date.setTime(this.contractDetails.startTime.getTime())
+            date.setTime(new Date(this.contractDetails.startTime).getTime())
             if (date instanceof Date && !isNaN(this.contractDetails.term)) {
               let givenMonth = date.getMonth();
               let newMonth = givenMonth + Number(this.contractDetails.term);
@@ -383,21 +392,25 @@
         this.custParam.idType = '';
       },
       selectCust(data, index) {
-        this.customer.custType = data.custType;
-        this.customer.custName = data.custName;
-        this.customer.idType = data.idType;
-        this.customer.idNum = data.idNum;
-        this.customer.code = data.code;
+        this.custQueryValue.custType = data.custType;
+        this.custQueryValue.custName = data.custName;
+        this.custQueryValue.idType = data.idType;
+        this.custQueryValue.idNum = data.idNum;
+        this.custQueryValue.code = data.code;
       },
       retCust() {
+        this.customer.custType = this.custQueryValue.custType;
+        this.customer.custName = this.custQueryValue.custName;
+        this.customer.idType = this.custQueryValue.idType;
+        this.customer.idNum = this.custQueryValue.idNum;
+        this.customer.code = this.custQueryValue.code;
         // console.log(this.customer)
       },
       cancleCust() {
-        this.customer.custType = '';
-        this.customer.custName = '';
-        this.customer.idType = '';
-        this.customer.idNum = '';
-        this.customer.code = '';
+        this.custParam.custType = '';
+        this.custParam.custName = '';
+        this.custParam.idType = '';
+        this.custParam.idNum = '';
       },
       save() {
         if (this.validate() && this.validateAccount()) {
@@ -463,7 +476,7 @@
           })
           return false;
         }
-        if (this.contractDetails.totalMoney == null || this.contractDetails.contractName == "" || this.contractDetails.startTime == "" | this.contractDetails.endTime == "") {
+        if (this.checkEmpty(this.contractDetails.totalMoney)||this.checkEmpty( this.contractDetails.contractName) || this.checkEmpty(this.contractDetails.startTime )|| this.checkEmpty(this.contractDetails.endTime)) {
           this.$Message.error({
             background: true,
             content: '合同模块必填字段不能为空！'
@@ -516,6 +529,12 @@
       displayCustView() {
         this.searchCust();
         this.displayCustPage = true;
+      },
+      checkEmpty(value){
+          if(value==undefined ||value== null ||  value==''){
+            return true;
+          }
+          return false;
       }
     }
   }

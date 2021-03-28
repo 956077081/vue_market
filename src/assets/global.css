@@ -20,7 +20,11 @@
 .ivu-table-cell {
   font-size: small;
 }
-
+.tableCss /deep/ .ivu-table-cell {
+  padding-right: 4px ! important;;
+  padding-left: 5px ! important;;
+  width: 100%;
+}
 /**************覆盖iview的一些样式****************/
 /*.v-transfer-dom{*/
 /*  padding:0px !important;*/

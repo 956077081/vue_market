@@ -1,7 +1,7 @@
 <style scoped>
-  .tableCss /deep/ .ivu-table-cell{
-     padding-right: 4px;
-    padding-left: 5px;
+  .tableCss /deep/ .ivu-table-cell  {
+     padding-right: 4px ! important;
+    padding-left: 5px ! important;
     width: 100%;
   }
   .page_main /deep/ .ivu-card-head p{

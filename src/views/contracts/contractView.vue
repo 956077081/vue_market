@@ -178,6 +178,7 @@
       this.$postMgr("/contract/get/"+this.code).then(res=>{
         this.customer =res.data.customer;
         this.accountList=res.data.accountMoneyDetails;
+        console.log(res);
         this.contractDetails =res.data.contractdetails;
       }).catch(err=>{
         this.$Message.error({

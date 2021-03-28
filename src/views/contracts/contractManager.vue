@@ -4,8 +4,11 @@
     padding-top: 20px;
     font-size: medium;
   }
-
-
+  .tableCss /deep/ .ivu-table-cell{
+    padding-right: 4px;
+    padding-left: 5px;
+    width: 100%;
+  }
   .font_move {
     position: relative;
     padding-top: 5px;
@@ -358,17 +361,19 @@
       },
       deleteContract(code) {
         this.$postMgr("/contract/delete", {code: code},'get').then(res => {
-          this.search();
           this.$Message.success({
             background: true,
-            content: '合同置作废成功！'
+            content: '合同置作废成功！',
+            duration:3,
           });
         }).catch(err => {
           this.$Message.error({
             background: true,
-            content: '合同置作废失败！'
+            content: '合同置作废失败！',
+            duration:3
           });
         })
+        this.reload();
       },
       insertContract() {
         this.$router.push({path: '/contract/contractDetails', query: {operate: 'create'}});
@@ -392,7 +397,6 @@
               content:'合同置完结成功！！',
               duration:3
             })
-            this.reload();
           }).catch(err=>{
             this.$Message.success({
               background: true,
@@ -400,6 +404,7 @@
               duration:3
             })
           })
+          this.reload();
         }
       },
       conSignContract() {

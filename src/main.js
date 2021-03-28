@@ -15,7 +15,10 @@ Vue.config.productionTip = false
 Vue.use(ivew,{locale})
 Vue.prototype.$postMgr =postMgr
 Vue.prototype.$getDictLable =getDictLable
-
+Vue.prototype.$Message.config({
+  top: 100,
+  duration: 3
+});
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -24,3 +27,4 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
