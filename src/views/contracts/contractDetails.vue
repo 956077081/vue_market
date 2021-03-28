@@ -81,7 +81,7 @@
           <Col span="8">
             <FormItem>
               <span slot="label"><require-element name="合同开始日期"></require-element></span>
-              <DatePicker type="date" style="width: 200px" @on-change="setstartDate" :value="this.contractDetails.startTime"></DatePicker>
+              <DatePicker type="date" style="width: 200px" @on-change="setstartDate" format="yyyy-MM-dd" :value="formatDate(this.contractDetails.startTime)"></DatePicker>
             </FormItem>
           </Col>
           <Col span="8">
@@ -96,7 +96,7 @@
           <Col span="8">
             <FormItem>
               <span slot="label"><require-element name="到期日期"></require-element></span>
-              <DatePicker type="date" style="width: 200px" @on-change="setEndDate"  :value="this.contractDetails.endTime"></DatePicker>
+              <DatePicker type="date"  format="yyyy-MM-dd" style="width: 200px" @on-change="setEndDate"     :value="formatDate(this.contractDetails.endTime)"></DatePicker>
             </FormItem>
           </Col>
           <!--          修改页面不显示打款详情-->
@@ -205,6 +205,7 @@
 
   import RequireElement from "../../components/common/requireElement";
   import {getDictByType} from "../../assets/js/dict";
+  import {formatDate} from "../../assets/js/util";
 
   export default {
     name: "contractDetails",
@@ -436,6 +437,7 @@
       queryContract() {
         this.$postMgr("/contract/get/" + this.code).then(res => {
           this.contractDetails = res.data.contractdetails;
+          console.log(this.contractDetails )
           this.customer = res.data.customer;
           this.account.payMoney = this.contractDetails.totalMoney;
         }).catch(err => {
@@ -454,6 +456,11 @@
         this.custParam.currPage = 1;
         this.custParam.pageSize = num;
         this.searchCust();
+      },
+      formatDate(date){
+        if( date != undefined && date != null &&date != ''){
+          return  formatDate( new Date(date),'yyyy-MM-dd')
+        }
       },
       searchCust() {
         this.$postMgr('/customer/list', this.custParam, 'get').then(res => {
