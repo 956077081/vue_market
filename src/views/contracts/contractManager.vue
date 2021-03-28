@@ -87,28 +87,39 @@
           </Col>
           <Col span="4">
             <div>
-              <DatePicker type="date" placeholder="开始时间" v-model="param.startEndTime"></DatePicker>
-
+              <DatePicker type="date" placeholder="开始时间" @on-change="setStartTime" ></DatePicker>
             </div>
           </Col>
           <Col span="8">
             <div>
-              &nbsp;~&nbsp;<DatePicker type="date" placeholder="结束时间" v-model="param.endEndTime"></DatePicker>
+              &nbsp;~&nbsp;<DatePicker type="date" placeholder="结束时间" @on-change="setEndTime" v-model="param.endEndTime"></DatePicker>
+            </div>
+          </Col>
+          <Col span="4">
+              <div class='ele_name'>合同是否过期</div>
+          </Col>
+          <Col span="4">
+            <div>
+              <Select v-model="param.isOverTime" clearable>
+                <Option value="1">是</Option>
+                <Option value="0">否</Option>
+              </Select>
             </div>
           </Col>
         </Row>
         <Row style="padding-top: 10px">
           <div>
-            <Col span="2" style="display: flex;">
+            <Col span="4" style="display: flex;">
               <Button @click="search">查询</Button>&nbsp;&nbsp;
-              <Button @click="insertContract">新增合同</Button>
+              <Button @click="insertContract">新增合同</Button>&nbsp;&nbsp;
+              <Button @click="finishContract">结束合同</Button>
             </Col>
           </div>
         </Row>
       </div>
     </div>
     <div>
-      <Table :columns="contractColumns" :data="contractList">
+      <Table class="tableCss" ref="contractList" :columns="contractColumns" :data="contractList">
         <template slot-scope="{ row, index }" slot="idType">
           {{getIdtypeLable(row.custType,row.idType)}}
         </template>
@@ -124,7 +135,7 @@
         <template slot-scope="{ row, index }" slot="operate">
           <Button  size="small" @click="viewContractDetails(row.code)">查看详情</Button>
           <Button v-if="row.status =='01'"  size="small" @click="updateContract(row.code)">修改</Button>
-          <Button v-if="row.status =='01'" size="small" @click="deleteContract(row.code)">失效</Button>
+          <Button v-if="row.status =='01'" size="small" @click="deleteContract(row.code)">作废</Button>
           <Button v-if="row.status =='01'"  size="small" @click="continueContract(row)">打款</Button>
         </template>
       </Table>
@@ -146,7 +157,7 @@
           <Col span="8" >
             <FormItem label="打款类型" v-if="signAccount.type==0 ">
               <Select v-model="signAccount.payType" @on-change="onchangePayType">
-              <Option v-for="type in payTypeDict" :value="type.value" :key="type.value" >{{type.label}}</Option>
+                 <Option v-for="type in payTypeDict" :value="type.value" :key="type.value" >{{type.label}}</Option>
              </Select>
             </FormItem>
           </Col>
@@ -201,6 +212,7 @@
           status:'01',
           startEndTime: null,
           endEndTime: null,
+          isOverTime:'',
           operatorName: '',
           contractName:'',
           currPage: 1,
@@ -208,6 +220,11 @@
           count: 0
         },
         contractColumns: [
+          {
+            type: 'selection',
+            width: 40,
+            align: 'center'
+          },
           {
             type: 'index',
             type: 'index',
@@ -242,6 +259,7 @@
             slot: 'status'
           },
           {
+            width: 80,
             title: '期限/月',
             key: 'term'
 
@@ -285,6 +303,12 @@
       }
     },
     methods: {
+      setStartTime(date){
+        this.param.startEndTime =date;
+      },
+      setEndTime(date){
+        this.param.endEndTime =date;
+      },
       changePage(curr) {
         this.param.currPage = curr;
         this.search()
@@ -337,17 +361,46 @@
           this.search();
           this.$Message.success({
             background: true,
-            content: '合同置失效成功！'
+            content: '合同置作废成功！'
           });
         }).catch(err => {
           this.$Message.error({
             background: true,
-            content: '合同置失效失败！'
+            content: '合同置作废失败！'
           });
         })
       },
       insertContract() {
         this.$router.push({path: '/contract/contractDetails', query: {operate: 'create'}});
+      },
+      finishContract(){
+        let  contracts=   this.$refs.contractList.getSelection();
+        if(contracts.length==0){
+          this.$Message.info({
+            content:'请选择需要置结束合同',
+            background: true,
+            duration:3,
+          })
+        }else{
+          let codes ="";
+          contracts.forEach(contract=>{
+            codes=codes+contract.code+",";
+          })
+          this.$postMgr("/contract/finishContract", {'codes':codes},'get').then(res=>{
+            this.$Message.success({
+              background: true,
+              content:'合同置完结成功！！',
+              duration:3
+            })
+            this.reload();
+          }).catch(err=>{
+            this.$Message.success({
+              background: true,
+              content:'合同置完结失败！！',
+              duration:3
+            })
+          })
+        }
       },
       conSignContract() {
         this.$postMgr("/account/insert",this.signAccount).then(res=>{
@@ -355,6 +408,7 @@
             background: true,
             content:'资金添加成功！',
           })
+          this.reload();
         }).catch(err=>{
           console.log("失败",err)
           this.$Message.error({
@@ -363,7 +417,6 @@
             content:'合同打款金额操作失败！'+err.data.mess
           })
         });
-        this.reload();
       },
       closeSign() {
         this.signAccount.contractCode ='';

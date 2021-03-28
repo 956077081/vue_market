@@ -54,16 +54,15 @@
           </Col>
 
           <Col span="4">
-            <div class='ele_name'>创建开始时间</div>
+            <div class='ele_name'>创建时间</div>
           </Col>
-          <Col span="4">
-            <DatePicker type="date" placeholder="创建开始时间" v-model="param.createTimeStart"></DatePicker>
+          <Col span="4" >
+            <DatePicker type="date" placeholder="创建开始时间" @on-change="setTimestart"></DatePicker>
           </Col>
-          <Col span="4">
-            <div class='ele_name'>创建结束时间</div>
-          </Col>
-          <Col span="4">
-            <DatePicker type="date" placeholder="创建结束时间" v-model="param.createTimeEnd"></DatePicker>
+          <Col span="8">
+            <div>
+              &nbsp;~&nbsp;<DatePicker type="date" placeholder="创建结束时间"  @on-change="setTimeEnd"></DatePicker>
+            </div>
           </Col>
         </Row>
         <Row style="padding-top:5px;padding-bottom: 5px">
@@ -240,6 +239,12 @@
       }
     },
     methods: {
+      setTimestart(date){
+       this.param.createTimeStart=date;
+      },
+      setTimeEnd(date){
+        this.param.createTimeEnd=date;
+      },
       getcheckSmsContent(){//getTemContent
         let  cust=   this.$refs.custList.getSelection();
         let content ="";

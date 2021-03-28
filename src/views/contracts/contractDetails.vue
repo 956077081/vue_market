@@ -130,7 +130,7 @@
           <Col span="8">
             <FormItem>
               <span slot="label"><require-element name="合同开始日期"></require-element></span>
-              <DatePicker type="date" style="width: 200px" v-model="contractDetails.startTime"></DatePicker>
+              <DatePicker type="date" style="width: 200px" @on-change="setstartDate" :value="this.contractDetails.startTime"></DatePicker>
             </FormItem>
           </Col>
           <Col span="8">
@@ -145,7 +145,7 @@
           <Col span="8">
             <FormItem>
               <span slot="label"><require-element name="到期日期"></require-element></span>
-              <DatePicker type="date" style="width: 200px" v-model="contractDetails.endTime"></DatePicker>
+              <DatePicker type="date" style="width: 200px" @on-change="setEndDate"  :value="this.contractDetails.endTime"></DatePicker>
             </FormItem>
           </Col>
           <!--          修改页面不显示打款详情-->
@@ -338,7 +338,12 @@
       }
     },
     methods: {
-
+      setstartDate(date){
+        this.contractDetails.startTime=date;
+      },
+      setEndDate(date){
+        this.contractDetails.endTime=date;
+      },
       filterMoney(money) {
 
         if (money != null && money != "") {

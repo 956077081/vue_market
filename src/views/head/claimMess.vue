@@ -38,13 +38,12 @@
       </Row>
       <Row :gutter="8" style="top: 5px">
         <Col span="12">
-          <Card title="近期添加客户">
-            <Table class="tableCss" :max-height="tableHeight" :columns="newCustColumns" :data="newCust">
-              <template slot-scope="{ row, index }" slot="createTime">
-                {{ formatTime(row.createTime)}}
+          <Card title="有效已过期合同">
+            <Table class="tableCss" :max-height="tableHeight" :columns="hasOverContract" :data="hasOverContracts" >
+              <template slot-scope="{ row, index }" slot="endTime">
+                {{ formatTime(row.endTime)}}
               </template>
             </Table>
-
           </Card>
         </Col>
         <Col span="12">
@@ -57,6 +56,21 @@
           </Card>
         </Col>
       </Row>
+      <Row :gutter="8" style="top: 5px">
+        <Col span="12">
+          <Card title="近期添加客户">
+            <Table class="tableCss" :max-height="tableHeight" :columns="newCustColumns" :data="newCust">
+              <template slot-scope="{ row, index }" slot="createTime">
+                {{ formatTime(row.createTime)}}
+              </template>
+            </Table>
+
+          </Card>
+        </Col>
+
+      </Row>
+
+
     </div>
   </div>
 </template>
@@ -111,9 +125,39 @@
           {
             title: '客户名称',
             key: 'custName'
-          }, {
+          },
+          {
+            title: '合同编号',
+            key: 'contractName'
+          }
+          ,{
             key: 'totalMoney',
             title: '合同金额',
+          },
+          {
+            key: 'endTime',
+            title: '合同到期日期',
+            slot: 'endTime'
+          },
+          {
+            key: 'operatorName',
+            title: '操作人'
+          }
+        ],
+        hasOverContract: [
+          {
+            type: 'index',
+            width: 100,
+            align: 'center',
+            title: '序号'
+          },
+          {
+            title: '客户名称',
+            key: 'custName'
+          },
+          {
+            title: '合同编号',
+            key: 'contractName'
           },
           {
             key: 'endTime',
@@ -181,6 +225,7 @@
         ],
         newContracts: [],
         overContracts: [],
+        hasOverContracts:[],
         newCust:[],
         newPayDetails:[],
       }
@@ -206,6 +251,11 @@
           this.newPayDetails=res.data;
         })
       },
+      queryHasOverContract(){
+        this.$postMgr("/contract/hasOverContracts").then(res => {
+          this.hasOverContracts=res.data;
+        })
+      },
       formatTime(datatime){
       return   formatDate(new Date(datatime),'yyyy/MM/dd')
       }
@@ -213,6 +263,7 @@
     mounted() {
       this.queryRecentNewContracts();
       this.queryRecentOverContracts();
+      this.queryHasOverContract();
       this.queryRecentNewCust();
       this.queryRecentNewPayDetails();
     }
