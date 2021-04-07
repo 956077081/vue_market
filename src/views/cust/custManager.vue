@@ -88,6 +88,7 @@
         <template slot-scope="{ row, index }" slot="operater" style="text-align: center">
           <Button size="small" @click="viewDetails(row.code)">查看详情</Button>
           <Button size="small" @click="updateCust(row.code)">修改</Button>
+          <Button size="small" @click="deleteCust(row.code)">删除</Button>
         </template>
       </Table>
     </div>
@@ -130,13 +131,14 @@
 
   export default {
     name: "custManager",
+    inject: ['reload'],
     data() {
       return {
         isSendSms:false,
         columns1: [
           {
             type: 'selection',
-            width: 60,
+            width: 40,
             align: 'center'
           },
           {
@@ -333,8 +335,20 @@
       viewDetails(code){
         this.$router.push({path:'/cust/custView',query:{code:code}})
       },
-      deleteCust(){
-
+      deleteCust(code){
+        this.$postMgr('/customer/delete', {code:code},'get').then(res => {
+          this.$Message.success({
+            background: true,
+            content: '删除成功！'
+          });
+        }).catch(err => {
+          console.log(err)
+          this.$Message.error({
+            background: true,
+            content: '删除失败！'+err.data.mess
+          });
+        })
+        this.reload();
       },
       updateCust(code){
         this.$router.push({path:'/cust/custDetails',query:{operate:'update',code:code}})

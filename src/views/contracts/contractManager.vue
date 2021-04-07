@@ -138,8 +138,9 @@
         <template slot-scope="{ row, index }" slot="operate">
           <Button  size="small" @click="viewContractDetails(row.code)">查看详情</Button>
           <Button v-if="row.status =='01'"  size="small" @click="updateContract(row.code)">修改</Button>
-          <Button v-if="row.status =='01'" size="small" @click="deleteContract(row.code)">作废</Button>
-          <Button v-if="row.status =='01'"  size="small" @click="continueContract(row)">打款</Button>
+          <Button v-if="row.status =='01'" size="small" @click="invalidContract(row.code)">作废</Button>
+          <Button v-if="row.status =='01'"  size="small" @click="continueContract(row.code)">打款</Button>
+          <Button v-if="row.status =='00'" size="small" @click="deleteContract(row.code)">删除</Button>
         </template>
       </Table>
     </div>
@@ -359,13 +360,14 @@
       updateContract(code) {
         this.$router.push({path: '/contract/contractDetails', query: {operate: 'update', code: code}});
       },
-      deleteContract(code) {
-        this.$postMgr("/contract/delete", {code: code},'get').then(res => {
+      invalidContract(code) {
+        this.$postMgr("/contract/invalid", {code: code},'get').then(res => {
           this.$Message.success({
             background: true,
             content: '合同置作废成功！',
             duration:3,
           });
+          this.reload();
         }).catch(err => {
           this.$Message.error({
             background: true,
@@ -373,7 +375,6 @@
             duration:3
           });
         })
-        this.reload();
       },
       insertContract() {
         this.$router.push({path: '/contract/contractDetails', query: {operate: 'create'}});
@@ -426,8 +427,22 @@
       closeSign() {
         this.signAccount.contractCode ='';
       },
-      continueContract(row) {//续签合同
-        this.signAccount.contractCode=row.code;
+      deleteContract(code){
+        this.$postMgr("/contract/delete",{code:code},'get').then(res=>{
+          this.$Message.success({
+            background: true,
+            content:'合同删除成功！',
+          })
+          this.reload();
+        }).catch(err=>{
+          this.$Message.error({
+            background: true,
+            content:'合同删除成功失败！'+err.data.mess
+          })
+        });
+      },
+      continueContract(code) {//续签合同
+        this.signAccount.contractCode=code;
         this.isConContract = true;
         this.$router.push("/contract");
       },
