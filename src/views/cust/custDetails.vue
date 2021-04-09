@@ -250,6 +250,10 @@
       },
       update() {
         postMgr('/customer/update/' + this.$route.query.code, this.customer).then(res => {
+          this.$Message.success({
+            background: true,
+            content: '修改保存客户成功!'
+          })
         }).catch(err => {
           this.$Message.error({
             background: true,

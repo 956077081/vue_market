@@ -3,6 +3,7 @@ import axios from "axios";
 import store from "../../store";
 import {getToken, removeToken} from "./auth";
 import {closeLoading, showloading} from "./common";
+import Nprogress from 'nprogress'
 // 创建axios实例
 const service = axios.create({
   baseURL: STATIC_CONFIG.server, // api的base_url
@@ -73,21 +74,19 @@ const post = function (url, param = {},action, files) {
     }else{
       pathparam = param;
     }
-
-    closeLoading();//先关闭
-    showloading();//在开启
+    Nprogress.start()//在开启
     service({
       method: method,
       url: url,
       data: postparam,
       params:pathparam
     }).then(res => {
-      closeLoading();
       resolve(res);//成功！
     }).catch(err => {
       console.log(err)
-      closeLoading();
       reject(err);//失败！
+    }).finally(()=>{
+      Nprogress.done();
     })
   }))
 }

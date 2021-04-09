@@ -63,6 +63,7 @@
           let map = res.data.xtimes.map(time=>{
             return time+appendstr;
           });
+          console.log(res,map)
           this.x =map;
           this.payMoney = res.data.payMoney;
           this.reduceMoney = res.data.reduceMoney;

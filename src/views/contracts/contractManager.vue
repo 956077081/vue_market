@@ -362,12 +362,12 @@
       },
       invalidContract(code) {
         this.$postMgr("/contract/invalid", {code: code},'get').then(res => {
+          this.search();
           this.$Message.success({
             background: true,
             content: '合同置作废成功！',
             duration:3,
           });
-          this.reload();
         }).catch(err => {
           this.$Message.error({
             background: true,
@@ -405,16 +405,16 @@
               duration:3
             })
           })
-          this.reload();
+          this.search();
         }
       },
-      conSignContract() {
+     async conSignContract() {
         this.$postMgr("/account/insert",this.signAccount).then(res=>{
+          this.search();
           this.$Message.success({
             background: true,
             content:'资金添加成功！',
-          })
-          this.reload();
+          });
         }).catch(err=>{
           console.log("失败",err)
           this.$Message.error({
@@ -422,10 +422,16 @@
             duration:3,
             content:'合同打款金额操作失败！'+err.data.mess
           })
-        });
-      },
-      closeSign() {
-        this.signAccount.contractCode ='';
+        })
+       this.closeSign();
+     },
+      closeSign() {//清空打款数据
+          this.signAccount.contractCode ='';
+          this.signAccount.type= '0',
+          this.signAccount.payType= '01',
+          this.signAccount.payMethod= '',
+          this.signAccount.payMoney= 0,
+          this.signAccount.accountNum="";
       },
       deleteContract(code){
         this.$postMgr("/contract/delete",{code:code},'get').then(res=>{
@@ -433,7 +439,7 @@
             background: true,
             content:'合同删除成功！',
           })
-          this.reload();
+          this.search();
         }).catch(err=>{
           this.$Message.error({
             background: true,

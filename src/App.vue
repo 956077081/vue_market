@@ -18,7 +18,7 @@ export default {
     }
   },
   methods:{
-    reload(){
+   async reload(){
       this.routeAlive =false;
       this.$nextTick(function () {
         this.routeAlive =true;

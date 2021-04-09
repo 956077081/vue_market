@@ -4,7 +4,7 @@ export function showloading() {
     content:'加载中...',
     background: true,
   })
-  // setTimeout(mess,6000);
+  // setTimeout(mess.asd,6000);
 }
 export function closeLoading() {
   Message.destroy();
