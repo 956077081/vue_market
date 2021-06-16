@@ -13,8 +13,8 @@
         <Col span="12" style="text-align: center;font-size: large">{{title}}</Col>
       </Row>
       <Row>
-        <Col span="">
-          <div ref="acountform" style="overflow-x: auto;height: 550px;">
+        <Col >
+          <div ref="acountform" style="overflow-x: inherit;height: 550px;">
           </div>
         </Col>
       </Row>
